@@ -6,8 +6,8 @@ import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 
-import javax.servlet.http.HttpServletResponse;
-import javax.websocket.OnClose;
+//import javax.servlet.http.HttpServletResponse;
+//import javax.websocket.OnClose;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.FormParam;
@@ -22,7 +22,7 @@ import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
-import org.apache.jasper.tagplugins.jstl.core.Set;
+//import org.apache.jasper.tagplugins.jstl.core.Set;
 import org.apache.lucene.queryparser.classic.ParseException;
 
 
