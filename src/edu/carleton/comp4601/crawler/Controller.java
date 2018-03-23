@@ -20,7 +20,7 @@ import edu.uci.ics.crawler4j.robotstxt.RobotstxtServer;
 public class Controller {
 	static int current = 0;
 	//change the sites crawled
-	static String[] seeds = {"https://sikaman.dyndns.org/courses/4601/resources/N-0.html", "https://sikaman.dyndns.org/courses/4601/handouts/"};//, "http://carleton.ca""https://sikaman.dyndns.org/courses/4601/lecture-9/N-0.html"};//
+	static String[] seeds = {"https://sikaman.dyndns.org/courses/4601/assignments/training/pages/"};
 
 	public static void main(String[] args) throws Exception {
 		String crawlStorageFolder = "/data/crawl/root";
@@ -28,7 +28,7 @@ public class Controller {
 		CrawlGraph.setInstance(new CrawlGraph());
 		CrawlConfig config = new CrawlConfig();
 		config.setCrawlStorageFolder(crawlStorageFolder);
-		config.setMaxPagesToFetch(2000);
+//		config.setMaxPagesToFetch(2000);
 		// forces other files to be crawled
 		config.setIncludeBinaryContentInCrawling(true);
 		// limits their size
