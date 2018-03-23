@@ -2,14 +2,16 @@ package edu.carleton.comp4601.crawler;
 
 import edu.carleton.comp4601.graph.*;
 
+import java.util.Set;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.tika.Tika;
-import org.apache.tika.metadata.Metadata;
-import org.apache.tika.parser.AutoDetectParser;
-import org.apache.tika.parser.ParseContext;
 import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+
+import com.mongodb.BasicDBObject;
 
 import edu.uci.ics.crawler4j.crawler.*;
 import edu.uci.ics.crawler4j.parser.HtmlParseData;
@@ -35,7 +37,6 @@ public class MyCrawler extends WebCrawler {
 
 	@Override
 	protected boolean shouldFollowLinksIn(WebURL url) {
-		// TODO Auto-generated method stub
 		crawltime = System.currentTimeMillis();
 		return super.shouldFollowLinksIn(url);
 	}
@@ -54,15 +55,15 @@ public class MyCrawler extends WebCrawler {
 	 */
 	@Override
 	public void visit(Page page) {
-		System.out.println("Time Before: " + crawltime);
-		crawltime = (System.currentTimeMillis() - crawltime);
-		System.out.println("Time After: " + crawltime);
-		getMyController().getConfig().setPolitenessDelay((int)(crawltime*10l));
+//		System.out.println("Time Before: " + crawltime);
+//		crawltime = (System.currentTimeMillis() - crawltime);
+//		System.out.println("Time After: " + crawltime);
+//		getMyController().getConfig().setPolitenessDelay((int)(crawltime*10l));
 		String url = page.getWebURL().getURL();
 		System.out.println("URL: " + url);
 
-		BasicDBObject fileContent = new BasicDBObject();
-		String content = "";
+		BasicDBObject docToAdd = new BasicDBObject();
+		
 		if (page.getParseData() instanceof HtmlParseData) {
 			HtmlParseData htmlParseData = (HtmlParseData) page.getParseData();
 			Set<WebURL> links = htmlParseData.getOutgoingUrls();
@@ -84,7 +85,23 @@ public class MyCrawler extends WebCrawler {
 				}
 			}
 			
-			System.out.println(CrawlGraph.getInstance().getGraph().vertexSet().size());
+			Document document = Jsoup.parse(htmlParseData.getHtml());
+			Matcher p = Pattern.compile("(<a href=.*?</a>)<p>(.*?)</p>").matcher(htmlParseData.getHtml());
+			Matcher users = Pattern.compile("(<a href=.*?</a>)").matcher(htmlParseData.getHtml());
+			
+//			while (users.find()) {
+//				System.out.println(users.group(1));
+//				System.out.println("==========");
+//			}
+			
+		
+			while (p.find()) {
+				System.out.println(p.group(1));
+				System.out.println(p.group(2));
+				System.out.println("==========");
+			}
+			// <br><p>(.*?)<\/p><br>
+			
 			/*Document document = Jsoup.parse(htmlParseData.getHtml());
 			String selector = "img[src~=(?i)\\.(png|jpe?g|gif)]";
 			Elements images = document.select(selector);
