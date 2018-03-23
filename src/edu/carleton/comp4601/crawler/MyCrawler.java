@@ -86,14 +86,14 @@ public class MyCrawler extends WebCrawler {
 			}
 
 			Document document = Jsoup.parse(htmlParseData.getHtml());
-			String expression = document.html().toString().replace("\n", "");//.replace("", "");
+			String expression = document.html().toString().replace("\n", "");
 
-			Matcher p = Pattern.compile("<br>\\s*<p>(.*?)</p>\\s*<br>").matcher(expression);
-			Matcher users = Pattern.compile("(<a href=.*?</a>)").matcher(htmlParseData.getHtml());
+			Matcher p = Pattern.compile("(<a href=.*?</a>)\\s*<br>\\s*<p>(.*?)</p>\\s*<br>").matcher(expression);
 		
 			
 			while (p.find()) {
 				System.out.println(p.group(1));
+				System.out.println(p.group(2));
 				System.out.println("==========");
 			}
 			
