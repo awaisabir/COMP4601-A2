@@ -84,23 +84,18 @@ public class MyCrawler extends WebCrawler {
 					CrawlGraph.getInstance().addEdge(v, w);
 				}
 			}
-			
+
 			Document document = Jsoup.parse(htmlParseData.getHtml());
-			Matcher p = Pattern.compile("(<a href=.*?</a>)<p>(.*?)</p>").matcher(htmlParseData.getHtml());
+			String expression = document.html().toString().replace("\n", "");//.replace("", "");
+
+			Matcher p = Pattern.compile("<br>\\s*<p>(.*?)</p>\\s*<br>").matcher(expression);
 			Matcher users = Pattern.compile("(<a href=.*?</a>)").matcher(htmlParseData.getHtml());
-			
-//			while (users.find()) {
-//				System.out.println(users.group(1));
-//				System.out.println("==========");
-//			}
-			
 		
+			
 			while (p.find()) {
 				System.out.println(p.group(1));
-				System.out.println(p.group(2));
 				System.out.println("==========");
 			}
-			// <br><p>(.*?)<\/p><br>
 			
 			/*Document document = Jsoup.parse(htmlParseData.getHtml());
 			String selector = "img[src~=(?i)\\.(png|jpe?g|gif)]";
