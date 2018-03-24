@@ -4,6 +4,7 @@ import java.net.UnknownHostException;
 import java.util.HashMap;
 
 import com.mongodb.BasicDBObject;
+import com.mongodb.DB;
 import com.mongodb.DBCollection;
 import com.mongodb.MongoClient;
 
@@ -11,12 +12,14 @@ import com.mongodb.MongoClient;
 
 public class MyMongoClient {
     MongoClient mc;
+    DB database;
 	DBCollection coll;
 	
 	HashMap<String,HashMap<String,DBCollection>> db;
 	public MyMongoClient() {
 		try {
 			mc = new MongoClient("localhost", 27017);
+			database = mc.getDB("COMP4601-A2");
 		} catch (UnknownHostException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -26,6 +29,10 @@ public class MyMongoClient {
 			db.put(d, new HashMap<String, DBCollection>());
 		}
 	}
+	
+	public synchronized MongoClient getMC() { return mc; }
+	public synchronized DB getDB() { return database; }
+	
 	public synchronized DBCollection getCollection(String dbName, String collectionName) {
 		validateCollection(dbName,collectionName);
 		return db.get(dbName).get(collectionName);
