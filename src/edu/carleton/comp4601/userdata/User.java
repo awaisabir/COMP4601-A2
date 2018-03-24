@@ -2,8 +2,11 @@ package edu.carleton.comp4601.userdata;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Random;
 
 import javax.xml.bind.annotation.XmlRootElement;
+
+import edu.carleton.comp4601.resources.MyValues;
 
 @XmlRootElement
 public class User {
@@ -16,7 +19,12 @@ public class User {
 	//Constructors
 	public User(String name){ 
 		this.name = name; 
-		buffGenre = "unfilled";
+		
+		//IMPORTANT NOTE: This is just used for testing!
+		Random rand = new Random();
+		int  n = rand.nextInt(3) + 0;
+		buffGenre = MyValues.movieGenre[n];
+		
 		ratings = new HashMap<String, Float>();
 		friends = new ArrayList<User>();
 	}
