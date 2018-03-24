@@ -58,9 +58,19 @@
     	<version>2.11.3</version>
 	</dependency>
     <dependency>
-      <groupId>com.sun.jersey</groupId>
-      <artifactId>jersey-bundle</artifactId>
-      <version>1.19</version>
-    </dependency>
+    	<groupId>com.sun.jersey</groupId>
+    	<artifactId>jersey-server</artifactId>
+    	<version>1.19</version>
+	</dependency>
+	<dependency>
+    	<groupId>com.sun.jersey</groupId>
+    	<artifactId>jersey-core</artifactId>
+    	<version>1.19</version>
+	</dependency>
+	<dependency>
+    	<groupId>com.sun.jersey</groupId>
+    	<artifactId>jersey-servlet</artifactId>
+    	<version>1.19</version>
+	</dependency>
   </dependencies>
 </project>

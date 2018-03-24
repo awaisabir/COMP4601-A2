@@ -27,6 +27,9 @@ import org.apache.lucene.queryparser.classic.ParseException;
 
 
 import Jama.Matrix;
+import edu.carleton.comp4601.crawler.UserController;
+import edu.carleton.comp4601.userdata.User;
+import edu.carleton.comp4601.userdata.UserCollection;
 
 import org.json.*;
 @Path("/")
@@ -67,6 +70,41 @@ public class Recommender {
 	@Produces(MediaType.APPLICATION_JSON)
 	public String sayJSON() {
 		return "{" + name + "}";
+	}
+	
+	@GET
+	@Path("/context")
+	@Produces(MediaType.TEXT_HTML)
+	// Decr: displays all users (with info) in table format (Req. 8)
+	public String context(){
+		
+		//html and table style setup
+		String html = "<html> <body> <head><style>table, th, td {border: 1px solid black;}</style></head>";
+		
+		//IMPORTANT TO NOTE: this is just temporary, we will probably find better place to start crawl
+		try { UserController.control();} 
+		catch (Exception e) { e.printStackTrace(); }
+		
+		//Table Setup
+		html = html + "<table style= \"width:100%\"> <tr> <th>Name</th> <th>Movie Buff</th> <th>Ratings</th> <th>Friends</th> </tr>";
+		
+		ArrayList<User> users = UserCollection.getInstance().getUsers();
+		//Add each user as row in table
+		for(int i = 0; i < users.size(); i++){
+			html = html + "<tr><td>"+ users.get(i).getName() + "</td><td>" + users.get(i).getBuffGenre() + "</td><td>" + users.get(i).getRatings().toString() + "</td><td>";
+			//Add all friends (int one cell)
+			for(int f = 0; f < users.get(i).getFreinds().size(); f++){
+				html = html + users.get(i).getFreinds().get(f).getName() + ", ";
+			}
+		}
+		
+		//closing html setup
+		html = html + "</td>   </tr> </table></body></html>";	     
+					     
+					     
+					   
+		
+		return html;
 	}
 	
 }
