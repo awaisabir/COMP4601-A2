@@ -54,6 +54,17 @@ public class CrawlGraph implements Serializable {
 		return instance;
 	}
 	
+	//This code is made so we can have a separate graph for (just) Users
+	private static CrawlGraph instance2;
+	public static void setInstanceUser(CrawlGraph object) {
+		CrawlGraph.instance2 = object;
+	}
+	public static CrawlGraph getInstanceUser() {
+		if (instance2 == null)
+			instance2 = new CrawlGraph();
+		return instance2;
+	}
+	
 	
     public synchronized Vertex getVertex(String url) {
    	 for(Vertex v: g.vertexSet()) {
