@@ -19,7 +19,6 @@ public class Controller {
 		CrawlGraph.setInstance(new CrawlGraph());
 		CrawlConfig config = new CrawlConfig();
 		config.setCrawlStorageFolder(crawlStorageFolder);
-		config.setMaxPagesToFetch(1);
 		// forces other files to be crawled
 		config.setIncludeBinaryContentInCrawling(true);
 		// limits their size
