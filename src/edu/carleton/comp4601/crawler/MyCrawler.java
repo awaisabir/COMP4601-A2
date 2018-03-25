@@ -31,9 +31,9 @@ public class MyCrawler extends WebCrawler {
 	private final static Pattern FILTERS = Pattern.compile(".*(\\.(css|js|pptx|png|ico"
 			+ "|mp3|mp4|zip|gz))$");
 	
-	boolean goodStatus = true;
 	MyMongoClient mc = new MyMongoClient();
 	DB database = mc.getDB();
+	DBCollection reviews = database.getCollection("review");
 	
 	/**
 	 * This method receives two parameters. The first parameter is the page
@@ -87,6 +87,7 @@ public class MyCrawler extends WebCrawler {
 						w = new Vertex(urlLinks.getURL(), urlLinks.getDocid());
 						CrawlGraph.getInstance().addVertex(w);
 					}
+					
 					CrawlGraph.getInstance().addEdge(v, w);
 				}
 			}
@@ -94,6 +95,7 @@ public class MyCrawler extends WebCrawler {
 			Document document = Jsoup.parse(htmlParseData.getHtml());
 			String expression = document.html().toString().replace("\n", "");
 
+			// Regular Expression to get usernames and reviews
 			Matcher p = Pattern.compile("(<a href=.*?</a>)\\s*<br>\\s*<p>(.*?)</p>\\s*<br>").matcher(expression);
 		
 			while (p.find()) {
@@ -102,25 +104,21 @@ public class MyCrawler extends WebCrawler {
 				int startIndex = user.indexOf(">")+1;
 				int endIndex = user.indexOf("</a>");
 				user = user.substring(startIndex, endIndex);
+			
+				BasicDBObject query = new BasicDBObject();
+				query.put("docId", page.getWebURL().getDocid());
 				
-				if (goodStatus) {
-					BasicDBObject query = new BasicDBObject();
-					query.put("docId", page.getWebURL().getDocid());
+				String pageTitle = document.title().toString();
+				
+				// add the review in
+				if (pageTitle.startsWith("B") || Character.isDigit(pageTitle.charAt(0))) {
+					BasicDBObject reviewToAdd = new BasicDBObject();
+					reviewToAdd.put("docId", page.getWebURL().getDocid());
+					reviewToAdd.put("movie", document.title().toString());
+					reviewToAdd.put("user", user);
+					reviewToAdd.put("review", review);
 					
-					// i am adding a movie
-					if (document.title().toString().startsWith("B") || Character.isDigit(document.title().toString().charAt(0))) {
-						DBObject foundMovieReviews = MyMongoClient.getInstance().getCollection("COMP4601-A2", "reviews").findOne(query);
-						if (foundMovieReviews == null) {
-							BasicDBObject reviewToAdd = new BasicDBObject();
-							reviewToAdd.put("docId", page.getWebURL().getDocid());
-							reviewToAdd.put("movie", document.title().toString());
-							reviewToAdd.put("user", user);
-							reviewToAdd.put("review", review);
-							
-							DBCollection reviews = database.getCollection("review");
-							reviews.insert(reviewToAdd);
-						}						
-					}
+					reviews.insert(reviewToAdd);
 				}
 			}
 		}
