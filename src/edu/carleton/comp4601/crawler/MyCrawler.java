@@ -3,22 +3,16 @@ package edu.carleton.comp4601.crawler;
 import edu.carleton.comp4601.graph.*;
 import edu.carleton.comp4601.repository.MyMongoClient;
 
-import java.net.UnknownHostException;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
 import com.mongodb.DBCollection;
-import com.mongodb.DBObject;
-import com.mongodb.MongoClient;
-import com.mongodb.MongoClientURI;
 
 import edu.uci.ics.crawler4j.crawler.*;
 import edu.uci.ics.crawler4j.parser.HtmlParseData;

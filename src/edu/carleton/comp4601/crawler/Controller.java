@@ -3,15 +3,6 @@ package edu.carleton.comp4601.crawler;
 import edu.carleton.comp4601.graph.*;
 import edu.uci.ics.crawler4j.crawler.CrawlConfig;
 
-import java.util.HashMap;
-
-import org.apache.tika.Tika;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
-
-
 import edu.uci.ics.crawler4j.crawler.CrawlController;
 import edu.uci.ics.crawler4j.fetcher.PageFetcher;
 import edu.uci.ics.crawler4j.robotstxt.RobotstxtConfig;
