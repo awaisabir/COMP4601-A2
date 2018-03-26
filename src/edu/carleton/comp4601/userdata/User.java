@@ -13,7 +13,7 @@ public class User {
 	
 	private String name;
 	private HashMap<String, Float> ratings;
-	private ArrayList<User> friends; //would user UserCollection but it is singleton...
+	private ArrayList<String> friends; //would user UserCollection but it is singleton...
 	private String buffGenre;
 	
 	//Constructors
@@ -26,18 +26,19 @@ public class User {
 		buffGenre = MyValues.movieGenre[n];
 		
 		ratings = new HashMap<String, Float>();
-		friends = new ArrayList<User>();
+		friends = new ArrayList<String>();
 	}
-	public User(String name, HashMap<String, Float> ratings, ArrayList<User> friends){
+	public User(String name, HashMap<String, Float> ratings, ArrayList<String> friends, String genre){
 		this.name = name;
 		this.ratings = ratings;
 		this.friends = friends;
+		this.buffGenre = genre;
 	}
 	
 	//Setters
 	public void setName(String name){this.name = name;}
 	public void setRatings(HashMap<String, Float> ratings){ this.ratings = ratings; }
-	public void setFriends(ArrayList<User> friends){ this.friends = friends; }
+	public void setFriends(ArrayList<String> friends){ this.friends = friends; }
 	public void setBuffGenre(String buffGenre){this.buffGenre = buffGenre;}
 	
 	//Getters
@@ -50,8 +51,11 @@ public class User {
 		}
 		return ratings; 
 	}
-	public ArrayList<User> getFreinds(){ return friends; }
+	public ArrayList<String> getFreinds(){ return friends; }
 	public String getBuffGenre(){ return buffGenre; }
+	
+	//Mongo Complatibility Methods
+	
 	
 
 }

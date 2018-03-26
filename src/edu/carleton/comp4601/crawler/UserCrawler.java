@@ -1,6 +1,7 @@
 package edu.carleton.comp4601.crawler;
 
 import edu.carleton.comp4601.graph.*;
+import edu.carleton.comp4601.repository.MyMongoClient;
 import edu.carleton.comp4601.userdata.*;
 
 import java.util.ArrayList;
@@ -14,6 +15,8 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import com.mongodb.BasicDBObject;
+import com.mongodb.DB;
+import com.mongodb.DBCollection;
 
 import edu.uci.ics.crawler4j.crawler.*;
 import edu.uci.ics.crawler4j.parser.HtmlParseData;
@@ -27,6 +30,12 @@ public class UserCrawler extends WebCrawler {
 	long crawltime = 0;
 	private final static Pattern FILTERS = Pattern.compile(".*(\\.(css|js|pptx|png|ico"
 			+ "|mp3|mp4|zip|gz))$");
+	
+	
+	//Mongo Set-up
+	MyMongoClient mc = new MyMongoClient();
+	DB database = mc.getDB();
+	DBCollection users = database.getCollection("user");
 
 	/**
 	 * This method receives two parameters. The first parameter is the page
@@ -99,7 +108,7 @@ public class UserCrawler extends WebCrawler {
 			
 			
 			//temp list for friends
-			ArrayList<User> friends = new ArrayList<User>();
+			ArrayList<String> friends = new ArrayList<String>();
 			
 			while (p.find()) {
 				System.out.println(p.group(1));
@@ -111,15 +120,27 @@ public class UserCrawler extends WebCrawler {
 				System.out.println("==========");
 				
 				//-Save name
-				User friendUser = new User(userFriendName);
-				friends.add(friendUser);
+				friends.add(userFriendName);
 			}
 			
 			
 			//Save User:
 			User newUser = new User(document.title());
 			newUser.setFriends(friends);
-			UserCollection.getInstance().addUser(newUser);
+			//UserCollection.getInstance().addUser(newUser);
+			
+			//Add User to Mongo
+			System.out.println("Name :" + newUser.getName());
+			System.out.println("friends :" + newUser.getFreinds().toString());
+			System.out.println("ratings :" + newUser.getRatings().toString());
+			System.out.println("genre :" + newUser.getBuffGenre());
+			
+			BasicDBObject userToAdd = new BasicDBObject();
+			userToAdd.put("name",    newUser.getName());
+			userToAdd.put("friends", newUser.getFreinds().toString());
+			userToAdd.put("ratings", newUser.getRatings().toString());
+			userToAdd.put("genre",   newUser.getBuffGenre());
+			users.insert(userToAdd);
 			
 		}
 
