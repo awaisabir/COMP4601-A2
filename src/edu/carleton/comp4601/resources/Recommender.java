@@ -87,8 +87,14 @@ public class Recommender {
 		String html = "<html> <body> <head><style>table, th, td {border: 1px solid black;}</style></head>";
 		
 		//IMPORTANT TO NOTE: this is just temporary, we will probably find better place to start crawl
-		try { UserController.control();} 
+		try { 
+			UserController.control();
+			UserCollection.getInstance().popluateCollection();
+			
+		} 
 		catch (Exception e) { e.printStackTrace(); }
+		
+		
 		
 		//Table setup
 		html = html + "<table style= \"width:100%\"> <tr> <th>Name</th> <th>Movie Buff</th> <th>Ratings</th> <th>Friends</th> </tr>";
@@ -99,7 +105,7 @@ public class Recommender {
 			html = html + "<tr><td>"+ users.get(i).getName() + "</td><td>" + users.get(i).getBuffGenre() + "</td><td>" + users.get(i).getRatings().toString() + "</td><td>";
 			//Add all friends (into one cell)
 			for(int f = 0; f < users.get(i).getFreinds().size(); f++){
-				html = html + users.get(i).getFreinds().get(f).getName() + ", ";
+				html = html + users.get(i).getFreinds().get(f) + ", ";
 			}
 		}
 		
