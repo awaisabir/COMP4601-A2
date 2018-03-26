@@ -3,23 +3,33 @@ package edu.carleton.comp4601.crawler;
 import edu.carleton.comp4601.graph.*;
 import edu.uci.ics.crawler4j.crawler.CrawlConfig;
 
+import java.util.HashMap;
+
+import org.apache.tika.Tika;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
+
+
 import edu.uci.ics.crawler4j.crawler.CrawlController;
 import edu.uci.ics.crawler4j.fetcher.PageFetcher;
 import edu.uci.ics.crawler4j.robotstxt.RobotstxtConfig;
 import edu.uci.ics.crawler4j.robotstxt.RobotstxtServer;
 
-public class Controller {
+public class UserController {
 	static int current = 0;
-	//change the sites crawled
-	static String[] seeds = {"https://sikaman.dyndns.org/courses/4601/assignments/training/pages/0767800117.html"};
+	
+	//We will start from the first user on the graph page, assuming we will visit all users 
+	static String[] seeds = {"https://sikaman.dyndns.org/courses/4601/assignments/training/graph/A1A69DJ2KPU4CH.html"};
 
-	public static void main(String[] args) throws Exception {
+	public static void control() throws Exception {
 		String crawlStorageFolder = "/data/crawl/root";
 		int numberOfCrawlers = seeds.length;
-		CrawlGraph.setInstance(new CrawlGraph());
+		CrawlGraph.setInstanceUser(new CrawlGraph());
 		CrawlConfig config = new CrawlConfig();
 		config.setCrawlStorageFolder(crawlStorageFolder);
-		config.setMaxPagesToFetch(1);
+		config.setMaxPagesToFetch(2);
 		// forces other files to be crawled
 		config.setIncludeBinaryContentInCrawling(true);
 		// limits their size
@@ -36,7 +46,7 @@ public class Controller {
 			} catch (Exception e) {	e.printStackTrace();}
 		}
 		//starts the controller to create the new graph
-		controller.start(MyCrawler.class, numberOfCrawlers);
+		controller.start(UserCrawler.class, numberOfCrawlers);
 
 	}
 
