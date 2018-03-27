@@ -5,7 +5,6 @@ import java.util.Set;
 
 import org.jgrapht.graph.DefaultDirectedGraph;
 import org.jgrapht.graph.DefaultEdge;
-import org.jgrapht.graph.Multigraph;
 
 public class CrawlGraph implements Serializable {
 	DefaultDirectedGraph<Vertex, DefaultEdge> g;

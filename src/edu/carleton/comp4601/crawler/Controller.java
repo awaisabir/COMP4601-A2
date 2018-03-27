@@ -11,12 +11,18 @@ import edu.uci.ics.crawler4j.robotstxt.RobotstxtServer;
 public class Controller {
 	static int current = 0;
 	//change the sites crawled
-	static String[] seeds = {"https://sikaman.dyndns.org/courses/4601/assignments/training/pages/0767800117.html"};
+	static String[] seeds = {
+		"https://sikaman.dyndns.org/courses/4601/assignments/training/pages/", 
+		"https://sikaman.dyndns.org/courses/4601/assignments/training/graph/"
+	};
 
 	public static void main(String[] args) throws Exception {
 		String crawlStorageFolder = "/data/crawl/root";
-		int numberOfCrawlers = seeds.length;
+		int numberOfCrawlers = 10;
+		
 		CrawlGraph.setInstance(new CrawlGraph());
+		SocialNetwork.setInstance(new SocialNetwork());
+		
 		CrawlConfig config = new CrawlConfig();
 		config.setCrawlStorageFolder(crawlStorageFolder);
 		// forces other files to be crawled

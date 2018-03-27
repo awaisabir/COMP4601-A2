@@ -11,8 +11,6 @@ import java.util.regex.Pattern;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
@@ -21,8 +19,6 @@ import com.mongodb.DBCollection;
 import edu.uci.ics.crawler4j.crawler.*;
 import edu.uci.ics.crawler4j.parser.HtmlParseData;
 import edu.uci.ics.crawler4j.url.*;
-
-import java.lang.StringBuilder;
 
 
 public class UserCrawler extends WebCrawler {
@@ -68,10 +64,6 @@ public class UserCrawler extends WebCrawler {
 	 */
 	@Override
 	public void visit(Page page) {
-//		System.out.println("Time Before: " + crawltime);
-//		crawltime = (System.currentTimeMillis() - crawltime);
-//		System.out.println("Time After: " + crawltime);
-//		getMyController().getConfig().setPolitenessDelay((int)(crawltime*10l));
 		String url = page.getWebURL().getURL();
 		System.out.println("URL: " + url);
 
