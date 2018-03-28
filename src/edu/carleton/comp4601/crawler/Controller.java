@@ -1,6 +1,16 @@
 package edu.carleton.comp4601.crawler;
 
+import java.util.HashSet;
+
+import com.mongodb.BasicDBObject;
+
+import Jama.Matrix;
+import edu.carleton.comp4601.categories.UserCommunityFinder;
 import edu.carleton.comp4601.graph.*;
+import edu.carleton.comp4601.repository.Marshaller;
+import edu.carleton.comp4601.repository.MyMongoClient;
+import edu.carleton.comp4601.userdata.User;
+import edu.carleton.comp4601.userdata.UserCollection;
 import edu.uci.ics.crawler4j.crawler.CrawlConfig;
 
 import edu.uci.ics.crawler4j.crawler.CrawlController;
@@ -42,7 +52,23 @@ public class Controller {
 		}
 		//starts the controller to create the new graph
 		controller.start(MyCrawler.class, numberOfCrawlers);
-
+		
+		MyMongoClient.getInstance().updateInCollection(
+				"COMP4601-A2",
+				"graph",
+				new BasicDBObject(), 
+				new BasicDBObject("socialNetwork",Marshaller.serializeObject(SocialNetwork.getInstance())).append("reviewsGraph",Marshaller.serializeObject(CrawlGraph.getInstance())));
+		
+		UserCommunityFinder ucf = new UserCommunityFinder();
+		UserCollection.getInstance().popluateCollection();
+		for (User u: UserCollection.getInstance().getUsers()) {
+			System.out.println(u.getName());
+			BasicDBObject obj = MyMongoClient.getInstance().findObject("COMP4601-A2", "users", new BasicDBObject("name", u.getName()));
+			obj.put("genre", ucf.getPrediction(u.getName()));
+			MyMongoClient.getInstance().updateInCollection("COMP4601-A2", "users", new BasicDBObject("name", u.getName()), obj);
+		}
+		System.out.println("done");
+		System.exit(0);
 	}
 
 }

@@ -55,7 +55,8 @@ public class MyCrawler extends WebCrawler {
 		crawltime = System.currentTimeMillis();
 		return !FILTERS.matcher(href).matches() && (
 				href.startsWith("https://sikaman.dyndns.org/courses/4601/assignments/training/pages") ||
-				href.startsWith("https://sikaman.dyndns.org/courses/4601/assignments/training/graph")
+				href.startsWith("https://sikaman.dyndns.org/courses/4601/assignments/training/graph") ||
+				href.startsWith("https://sikaman.dyndns.org/courses/4601/assignments/training/users/")
 		 );
 	}
 
@@ -68,6 +69,7 @@ public class MyCrawler extends WebCrawler {
 		
 		String url = page.getWebURL().getURL();
 		System.out.println("URL: " + url);
+		getMyController().getConfig().setPolitenessDelay((int)(System.currentTimeMillis() - crawltime)*10);
 		
 		if (page.getParseData() instanceof HtmlParseData) {
 			HtmlParseData htmlParseData = (HtmlParseData) page.getParseData();
@@ -147,7 +149,6 @@ public class MyCrawler extends WebCrawler {
 				
 				//temp list for friends
 				ArrayList<String> friends = new ArrayList<String>();
-				
 				while (p.find()) {
 					//-Parse Name
 					String userFriendName = p.group(1).substring(

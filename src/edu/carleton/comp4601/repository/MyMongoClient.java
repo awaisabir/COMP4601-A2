@@ -1,11 +1,13 @@
 package edu.carleton.comp4601.repository;
 
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
 import com.mongodb.DBCollection;
+import com.mongodb.DBCursor;
 import com.mongodb.MongoClient;
 
 
@@ -57,6 +59,19 @@ public class MyMongoClient {
 		validateCollection(dbName,collectionName);
 		BasicDBObject obj = (BasicDBObject)db.get(dbName).get(collectionName).findOne(document);
 		if(obj == null)
+			return null;
+		return obj;
+	}
+
+	public synchronized ArrayList<BasicDBObject> findObjects(String dbName, String collectionName, BasicDBObject document){
+		validateCollection(dbName,collectionName);
+		DBCursor cursor = db.get(dbName).get(collectionName).find(document);
+		ArrayList<BasicDBObject> obj = new ArrayList<BasicDBObject>();
+		
+		while(cursor.hasNext())
+			obj.add((BasicDBObject) cursor.next());		
+		
+		if(obj.isEmpty())
 			return null;
 		return obj;
 	}

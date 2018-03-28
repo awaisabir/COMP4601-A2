@@ -2,8 +2,10 @@ package edu.carleton.comp4601.graph;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
+import com.mongodb.BasicDBObject;
+
 @XmlRootElement
-public class Vertex {
+public class Vertex extends BasicDBObject{
 	/**
 	 * 
 	 */
@@ -14,7 +16,8 @@ public class Vertex {
 	public Vertex(String url, int docid){
 		this.url = url;
 		this.docID = docid;
-		
+		put("url", url);
+		put("docID", docid);
 	}
 	
 	public void setURL(String url) { this.url = url;	}
