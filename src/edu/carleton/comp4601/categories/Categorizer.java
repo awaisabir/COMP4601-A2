@@ -4,6 +4,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import com.mongodb.BasicDBObject;
+import com.mongodb.DB;
+import com.mongodb.DBCollection;
+import com.mongodb.DBCursor;
+import com.mongodb.DBObject;
+
+import edu.carleton.comp4601.repository.MyMongoClient;
 import weka.classifiers.trees.RandomForest;
 import weka.core.Attribute;
 import weka.core.DenseInstance;
@@ -19,6 +27,11 @@ public class Categorizer {
 	RandomForest rfClassifier = null;
 	static Instances ins = null;
 	
+	MyMongoClient mc = MyMongoClient.getInstance();
+	DB database = mc.getDB();
+	DBCollection reviews = database.getCollection("reviews");
+	DBCollection names = database.getCollection("movieNames");
+	
 	/* 
 	 * Function:	Constructor
 	 * Purpose:		Finds all unique words (first 100 words) for all documents
@@ -26,9 +39,23 @@ public class Categorizer {
 	 */
 	public Categorizer() {
 		//get all review content from database
-		String[] reviews = {"Here I Am!", "What are you doing", "Where do you go", "What did you think was going to happen", "Writing a review"};
+		ArrayList<String> reviewsArr = new ArrayList<String>(); //we could make this a normal array if we find the collection size of movieNames....		
+		
+		DBCursor cursName   = names.find();
+		while(cursName.hasNext()) {
+            DBObject o = cursName.next();
+            String name = (String) o.get("movieName");
+            
+            BasicDBObject movie = new BasicDBObject();
+            movie.put("movie", name);
+            BasicDBObject r = mc.findObject("COMP4601-A2", "reviews", movie);
+            String reviewText = r.getString("review");
+            reviewsArr.add(reviewText);
+		}
+		
+		
 		wordCount = new HashMap<String, Integer>();
-		for(String review: reviews) {
+		for(String review: reviewsArr) {
 			Matcher m = Pattern.compile("([\\w]*)\\s").matcher(review);
 			counter = 0;
 			while(m.find() && counter++ < 100){
@@ -36,6 +63,8 @@ public class Categorizer {
 					wordCount.put(m.group(1), 0);
 			}
 		}
+		
+		
 		rfClassifier = new RandomForest();
 		train();
 	}
@@ -53,6 +82,7 @@ public class Categorizer {
 	}
 	
 	
+	
 	/*
 	 * Function: Train
 	 * Parameters: none
@@ -61,6 +91,8 @@ public class Categorizer {
 	 */
 	public void train() {
 		//predetermined classification of movies made by Pierre Seguin **ADD MORE to improve accuracy**
+		
+		
 		HashMap<String,Integer> trainingData = new HashMap<String,Integer>();
 		trainingData.put("0784010331", 0);
 		trainingData.put("0792158288", 0);
@@ -74,12 +106,18 @@ public class Categorizer {
 		trainingData.put("B004RE29T0", 2);
 		trainingData.put("B0000DK4QJ", 0);
 		
+		//POPULATE
+		System.out.println("IN TRAIN");
 		HashMap<String, Integer> dataToTrain = new HashMap<String,Integer>();
-		dataToTrain.put("B004RE29T0", -1);
-	    dataToTrain.put("B00004RJ74", -1);
-	    dataToTrain.put("0792140923", -1);
+		DBCursor curs = names.find();
+		while(curs.hasNext()) {
+            DBObject o  = curs.next();
+            String name = (String) o.get("movieName");
+            
+            dataToTrain.put(name, -1);
+		}
 	    buildClassifier(trainingData, dataToTrain);
-
+	    System.out.println("size of dataToTrain: " + dataToTrain.size());
 	}
 	
 	/*
@@ -91,6 +129,7 @@ public class Categorizer {
 	 * 				word occurrences to the HashMap 
 	 */
 	public HashMap<String,Integer> getPageWords(String pageID) {
+		/*
 		HashMap<String,Integer> pageCounts = new HashMap<String,Integer>(wordCount); 
 		String page;
 		//Retrieves the pageID Content 
@@ -101,13 +140,33 @@ public class Categorizer {
 			default:
 				page = "What are you doing";
 				break;
-		}
-		
 		
 		//searches all words and counts the occurrences
 		for(String key: pageCounts.keySet())
 			pageCounts.put(key, page.split("\\s?"+key+"\\s").length - 1);
 		return pageCounts;
+		
+		*/
+		//Step One: create hashmap
+		HashMap<String,Integer> pageCounts = new HashMap<String,Integer>(wordCount); 
+		
+		//Step Two: set page to first 2 movie reviews
+		BasicDBObject review = new BasicDBObject();
+		review.put("movie", pageID);
+		BasicDBObject result = mc.findObject("COMP4601-A2", "reviews", review);
+		System.out.println("dude: " + result.get("user"));
+		System.out.println("review yo: " +result.get("review"));
+		
+		String reviewStr = (String) result.get("review");
+		
+		//searches all words and counts the occurrences
+		for(String key: pageCounts.keySet())
+			pageCounts.put(key, reviewStr.split("\\s?"+key+"\\s").length - 1);
+		
+		System.out.println(pageCounts.toString());
+		return pageCounts;
+		
+		
 	}
 	
 	/*
