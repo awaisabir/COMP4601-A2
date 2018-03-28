@@ -29,8 +29,9 @@ public class MyCrawler extends WebCrawler {
 	
 	MyMongoClient mc = new MyMongoClient();
 	DB database = mc.getDB();
-	DBCollection reviews = database.getCollection("reviews");
-	DBCollection users = database.getCollection("users");
+	DBCollection reviews    = database.getCollection("reviews");
+	DBCollection users      = database.getCollection("users");
+	DBCollection movieNames = database.getCollection("movieNames");
 	
 	/**
 	 * This method receives two parameters. The first parameter is the page
@@ -53,10 +54,25 @@ public class MyCrawler extends WebCrawler {
 	public boolean shouldVisit(Page referringPage, WebURL url) {
 		String href = url.getURL().toLowerCase();
 		crawltime = System.currentTimeMillis();
+		boolean noRepeat = false;
+		
+		if(href.startsWith("https://sikaman.dyndns.org/courses/4601/assignments/training/pages")){
+			String pageName = href.substring(href.indexOf("pages/"));
+			BasicDBObject review = new BasicDBObject();
+			review.put("movie", pageName);
+			if(mc.findObject("COMP4601-A2", "reviews", review) == null){noRepeat = true;}
+			
+		}else if(href.startsWith("https://sikaman.dyndns.org/courses/4601/assignments/training/graph")){
+			String userName = href.substring(href.indexOf("graph/"));
+			BasicDBObject user = new BasicDBObject();
+			user.put("name", userName);
+			if(mc.findObject("COMP4601-A2", "users", user) == null){noRepeat = true;}
+		}
+		
 		return !FILTERS.matcher(href).matches() && (
 				href.startsWith("https://sikaman.dyndns.org/courses/4601/assignments/training/pages") ||
-				href.startsWith("https://sikaman.dyndns.org/courses/4601/assignments/training/graph")
-		 );
+				href.startsWith("https://sikaman.dyndns.org/courses/4601/assignments/training/graph") 
+		        ) && (noRepeat = true);
 	}
 
 	/**
@@ -121,6 +137,14 @@ public class MyCrawler extends WebCrawler {
 						reviews.insert(reviewToAdd);
 					}
 				}
+				
+				//Populate Mongo- movieNames collection
+				if (pageTitle.startsWith("B") || Character.isDigit(pageTitle.charAt(0))) {
+					BasicDBObject nameToAdd = new BasicDBObject();
+					nameToAdd.put("movieName", document.title().toString());
+					movieNames.insert(nameToAdd);	
+				}
+				
 				
 			} else {
 				// social network crawl

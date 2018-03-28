@@ -28,7 +28,8 @@ import org.apache.lucene.queryparser.classic.ParseException;
 
 
 import Jama.Matrix;
-import edu.carleton.comp4601.crawler.UserController;
+import edu.carleton.comp4601.categories.Categorizer;
+import edu.carleton.comp4601.crawler.Controller;
 import edu.carleton.comp4601.userdata.User;
 import edu.carleton.comp4601.userdata.UserCollection;
 //import edu.carleton.comp4601.resources.MyValues;
@@ -78,6 +79,14 @@ public class Recommender {
 	}
 	
 	@GET
+	@Path("/cat")
+	@Produces(MediaType.APPLICATION_JSON)
+	public String categ() {
+		Categorizer c = new Categorizer();
+		return "{" + "fuck" + "}";
+	}
+	
+	@GET
 	@Path("/context")
 	@Produces(MediaType.TEXT_HTML)
 	// Decr: displays all users (with info) in table format (Req. 8)
@@ -88,7 +97,8 @@ public class Recommender {
 		
 		//IMPORTANT TO NOTE: this is just temporary, we will probably find better place to start crawl
 		try { 
-			UserController.control();
+			String[] args = new String[3];
+			Controller.main(args);
 			UserCollection.getInstance().popluateCollection();
 			
 		} 
