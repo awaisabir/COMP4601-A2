@@ -72,7 +72,6 @@ public class MyCrawler extends WebCrawler {
 		return !FILTERS.matcher(href).matches() && (
 				href.startsWith("https://sikaman.dyndns.org/courses/4601/assignments/training/pages") ||
 				href.startsWith("https://sikaman.dyndns.org/courses/4601/assignments/training/graph") 
-//				||	href.startsWith("https://sikaman.dyndns.org/courses/4601/assignments/training/users/")
 		        ) && (noRepeat = true);
 	}
 

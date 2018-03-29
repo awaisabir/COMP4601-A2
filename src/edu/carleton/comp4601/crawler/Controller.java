@@ -60,16 +60,16 @@ public class Controller {
 				new BasicDBObject(), 
 				new BasicDBObject("socialNetwork",Marshaller.serializeObject(SocialNetwork.getInstance())).append("reviewsGraph",Marshaller.serializeObject(CrawlGraph.getInstance())));
 		
-		UserCommunityFinder ucf = new UserCommunityFinder();
-		UserCollection.getInstance().popluateCollection();
-		for (User u: UserCollection.getInstance().getUsers()) {
-			System.out.println(u.getName());
-			BasicDBObject obj = MyMongoClient.getInstance().findObject("COMP4601-A2", "users", new BasicDBObject("name", u.getName()));
-			obj.put("genre", ucf.getPrediction(u.getName()));
-			MyMongoClient.getInstance().updateInCollection("COMP4601-A2", "users", new BasicDBObject("name", u.getName()), obj);
-		}
-		System.out.println("done");
-		System.exit(0);
+//		UserCommunityFinder ucf = new UserCommunityFinder();
+//		UserCollection.getInstance().popluateCollection();
+//		for (User u: UserCollection.getInstance().getUsers()) {
+//			System.out.println(u.getName());
+//			BasicDBObject obj = MyMongoClient.getInstance().findObject("COMP4601-A2", "users", new BasicDBObject("name", u.getName()));
+//			obj.put("genre", ucf.getPrediction(u.getName()));
+//			MyMongoClient.getInstance().updateInCollection("COMP4601-A2", "users", new BasicDBObject("name", u.getName()), obj);
+//		}
+//		System.out.println("done");
+//		System.exit(0);
 	}
 
 }

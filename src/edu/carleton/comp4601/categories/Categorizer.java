@@ -12,6 +12,7 @@ import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 
 import edu.carleton.comp4601.repository.MyMongoClient;
+import edu.carleton.comp4601.userdata.UserCollection;
 import weka.classifiers.trees.RandomForest;
 import weka.core.Attribute;
 import weka.core.DenseInstance;
@@ -117,6 +118,12 @@ public class Categorizer {
             dataToTrain.put(name, -1);
 		}
 	    buildClassifier(trainingData, dataToTrain);
+	    
+	    for(String movie: dataToTrain.keySet()) {
+
+	    	BasicDBObject m = new BasicDBObject("movieName", movie);
+	    	MyMongoClient.getInstance().updateInCollection("COMP4601-A2", "movieNames", m, m.append("genre",dataToTrain.get(movie)));
+	    }
 	    System.out.println("size of dataToTrain: " + dataToTrain.size());
 	}
 	

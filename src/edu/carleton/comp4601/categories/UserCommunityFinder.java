@@ -42,18 +42,17 @@ public class UserCommunityFinder {
 	}
 	
 	public String getPrediction(String user) {
-		HashSet<String> friends = getFriendsOfAndIncluding("AJKWF4W7QD4NS");
+		HashSet<String> friends = getFriendsOfAndIncluding(user);
 		ArrayList<String> movies = new ArrayList<String>(getMoviesRatedBy(friends));
 		Matrix m = getMatrixOfUserMovieReviews(new ArrayList<String>(friends),movies);
 		HashMap<String, Integer> genres = new HashMap<String, Integer>(Categorizer.MOVIE_GENRE.length);
 		for(int j = 0; j<genres.size(); j++)
 			genres.put(Categorizer.MOVIE_GENRE[j], 0);
 		for(int i = 0; i< m.getColumnDimension(); i++)
-			if(m.get(0, i) == 1d){
+			if(m.get(0, i) == 1d) {
 				String gkey = MyMongoClient.getInstance().findObject("COMP4601-A2", "reviews", new BasicDBObject("movie",movies.get(i))).getString("genre");
 				genres.put(gkey, genres.get(gkey)+1);
 			}
-		
 		String maxgenre = Categorizer.MOVIE_GENRE[0];
 		for(String key: genres.keySet())
 			if(genres.get(key) > genres.get(maxgenre))
@@ -177,18 +176,7 @@ public class UserCommunityFinder {
 	
 	
 	private HashSet<String> getMoviesOf(String friend) {
-		HashSet<String> movies = new HashSet<String>();
-		BasicDBObject obj = MyMongoClient.getInstance().findObject("COMP4601-A2", "users", new BasicDBObject("name", friend));
-		if (obj != null) {
-			JSONArray arr = new JSONArray(obj.getString("movies"));
-			for(int i = 0; i < arr.length(); i++)
-				movies.add(arr.getString(i));
-		}
-//		for(DefaultEdge e: CrawlGraph.getInstance().getGraph().outgoingEdgesOf(CrawlGraph.getInstance().getVertex("https://sikaman.dyndns.org/courses/4601/assignments/training/users/"+friend+".html"))) {
-//			int id = CrawlGraph.getInstance().getGraph().getEdgeTarget(e).getDocID();
-//			movies.add(MyMongoClient.getInstance().findObject("COMP4601-A2", "reviews", new BasicDBObject("docId",id)).getString("movie"));
-//		}
-		return movies;
+		return new HashSet<String>(UserCollection.getInstance().getUser(friend).getMovies());
 	}
 	
 	private HashSet<String> getFriendsOf(String user) {
