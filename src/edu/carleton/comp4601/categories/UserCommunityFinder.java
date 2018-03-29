@@ -178,19 +178,27 @@ public class UserCommunityFinder {
 	
 	private HashSet<String> getMoviesOf(String friend) {
 		HashSet<String> movies = new HashSet<String>();
-		for(DefaultEdge e: CrawlGraph.getInstance().getGraph().outgoingEdgesOf(CrawlGraph.getInstance().getVertex("https://sikaman.dyndns.org/courses/4601/assignments/training/users/"+friend+".html"))) {
-			int id = CrawlGraph.getInstance().getGraph().getEdgeTarget(e).getDocID();
-			movies.add(MyMongoClient.getInstance().findObject("COMP4601-A2", "reviews", new BasicDBObject("docId",id)).getString("movie"));
+		BasicDBObject obj = MyMongoClient.getInstance().findObject("COMP4601-A2", "users", new BasicDBObject("name", friend));
+		if (obj != null) {
+			JSONArray arr = new JSONArray(obj.getString("movies"));
+			for(int i = 0; i < arr.length(); i++)
+				movies.add(arr.getString(i));
 		}
+//		for(DefaultEdge e: CrawlGraph.getInstance().getGraph().outgoingEdgesOf(CrawlGraph.getInstance().getVertex("https://sikaman.dyndns.org/courses/4601/assignments/training/users/"+friend+".html"))) {
+//			int id = CrawlGraph.getInstance().getGraph().getEdgeTarget(e).getDocID();
+//			movies.add(MyMongoClient.getInstance().findObject("COMP4601-A2", "reviews", new BasicDBObject("docId",id)).getString("movie"));
+//		}
 		return movies;
 	}
 	
 	private HashSet<String> getFriendsOf(String user) {
 		HashSet<String> friends = new HashSet<String>();
 		BasicDBObject obj = MyMongoClient.getInstance().findObject("COMP4601-A2", "users", new BasicDBObject("name",user));
-		JSONArray arr = new JSONArray(obj.getString("friends"));//obj.getString("friends").replace("[", "").replaceAll("]", "").split(", ");
-		for(int i = 0; i<arr.length(); i++)
-			friends.add(arr.getString(i));
+		if(obj != null){
+			JSONArray arr = new JSONArray(obj.getString("friends"));
+			for(int i = 0; i<arr.length(); i++)
+				friends.add(arr.getString(i));
+		}
 		return friends;
 	}
 	
@@ -205,9 +213,18 @@ public class UserCommunityFinder {
 //		System.out.println(SocialNetwork.getInstance().getGraph().vertexSet());
 		UserCommunityFinder finder = new UserCommunityFinder();
 		System.out.println(finder.getFriendsOfAndIncluding("ABSX5TGEGRH76"));
-		System.out.println(CrawlGraph.getInstance().getVertex("https://sikaman.dyndns.org/courses/4601/assignments/training/users/ABSX5TGEGRH76.html"));
-		System.out.println(CrawlGraph.getInstance().getGraph().outgoingEdgesOf(CrawlGraph.getInstance().getVertex("https://sikaman.dyndns.org/courses/4601/assignments/training/users/ABSX5TGEGRH76.html")));
 		System.out.println(finder.getMoviesOf("ABSX5TGEGRH76"));
+		HashMap<String,Integer> genres = new HashMap<String,Integer>();
+		ArrayList genreNames = new ArrayList<>(Arrays.asList(Categorizer.MOVIE_GENRE));
+		for(String genre: Categorizer.MOVIE_GENRE)
+			genres.put(genre, 0);
+		for(BasicDBObject obj: MyMongoClient.getInstance().findObjects("COMP4601-A2", "users", new BasicDBObject())) {
+			HashSet<String> f = finder.getFriendsOfAndIncluding(obj.getString("name"));
+			ArrayList<String> mov = new ArrayList<String>(finder.getMoviesRatedBy(f));
+			Matrix m = finder.getMatrixOfUserMovieReviews(new ArrayList<String>(f), mov);
+
+		}
+		
 //		System.out.println(finder.getMoviesOf("ABSX5TGEGRH76"));
 //		finder.getMatrixOfUserMovieReviews(
 //				new ArrayList<String>(finder.getFriendsOfAndIncluding("AJKWF4W7QD4NS")), 
