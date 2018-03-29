@@ -50,6 +50,7 @@ public class Controller {
 				controller.addSeed(seeds[i]);
 			} catch (Exception e) {	e.printStackTrace();}
 		}
+		
 		//starts the controller to create the new graph
 		controller.start(MyCrawler.class, numberOfCrawlers);
 		
