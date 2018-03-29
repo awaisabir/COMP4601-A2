@@ -82,7 +82,7 @@ public class UserCollection {
                 HashMap<String, Float> ratings = new HashMap<String, Float>();
                 List<String> ratingsList = Arrays.asList(ratingsStr.substring(1, ratingsStr.length() - 1).split(", "));
                 
-                for(int i = 0; i< ratingsList.size(); i++){
+                for(int i=0; i<ratingsList.size(); i++){
                 	String movie      = ratingsList.get(i).substring(0, ratingsList.get(i).lastIndexOf("="));
                 	Float movieRating = Float.parseFloat(ratingsList.get(i).substring(ratingsList.get(i).lastIndexOf("=")+1));
                 	ratings.put(movie, movieRating);
