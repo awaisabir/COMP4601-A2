@@ -14,6 +14,7 @@ public class User {
 	private String name;
 	private HashMap<String, Float> ratings;
 	private ArrayList<String> friends; //would user UserCollection but it is singleton...
+	private ArrayList<String> movies; //movies reviewed by a User
 	private String buffGenre;
 	
 	//Constructors
@@ -27,22 +28,28 @@ public class User {
 		
 		ratings = new HashMap<String, Float>();
 		friends = new ArrayList<String>();
+		movies  = new ArrayList<String>();
 	}
-	public User(String name, HashMap<String, Float> ratings, ArrayList<String> friends, String genre){
+	
+	public User(String name, HashMap<String, Float> ratings, ArrayList<String> friends, ArrayList<String> movies, String genre){
 		this.name = name;
 		this.ratings = ratings;
 		this.friends = friends;
+		this.movies = movies;
 		this.buffGenre = genre;
 	}
 	
 	//Setters
-	public void setName(String name){this.name = name;}
-	public void setRatings(HashMap<String, Float> ratings){ this.ratings = ratings; }
-	public void setFriends(ArrayList<String> friends){ this.friends = friends; }
-	public void setBuffGenre(String buffGenre){this.buffGenre = buffGenre;}
+	public void setName(String name) { this.name = name; }
+	public void setRatings(HashMap<String, Float> ratings) { this.ratings = ratings; }
+	public void setFriends(ArrayList<String> friends) { this.friends = friends; }
+	public void setBuffGenre(String buffGenre) { this.buffGenre = buffGenre; }
 	
 	//Getters
 	public String getName(){ return name;}
+	public ArrayList<String> getFreinds(){ return friends; }
+	public String getBuffGenre(){ return buffGenre; }
+	public ArrayList<String> getMovies() { return this.movies; }
 	public HashMap<String, Float> getRatings(){ 		
 		//Used For testing...
 		if (ratings.size() == 0){ 
@@ -51,11 +58,8 @@ public class User {
 		}
 		return ratings; 
 	}
-	public ArrayList<String> getFreinds(){ return friends; }
-	public String getBuffGenre(){ return buffGenre; }
 	
-	//Mongo Complatibility Methods
-	
-	
+	public boolean addMovieToList(String movieId) { return movies.add(movieId); }
 
+	
 }

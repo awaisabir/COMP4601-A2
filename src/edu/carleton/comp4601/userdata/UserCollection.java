@@ -8,6 +8,7 @@ import java.util.List;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
+import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
 import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
@@ -49,6 +50,7 @@ public class UserCollection {
 		MyMongoClient mc = MyMongoClient.getInstance();
 		DB database = mc.getDB();
 		DBCollection users = database.getCollection("user");
+		DBCollection reviews = database.getCollection("reviews");
 		
 		DBCursor curs = users.find();
 		
@@ -56,10 +58,21 @@ public class UserCollection {
 		try {
             while(curs.hasNext()) {
                 DBObject o = curs.next();
-                String name =       (String) o.get("name") ; 
+                String name       = (String) o.get("name") ; 
                 String friendsStr = (String) o.get("friends") ; 
                 String ratingsStr = (String) o.get("ratings") ; 
-                String genre =      (String) o.get("genre") ;
+                String genre      = (String) o.get("genre") ;
+                
+                DBObject query = new BasicDBObject();
+                query.put("user", name);
+                
+                DBCursor moviesByUser = reviews.find(query);
+                ArrayList<String> movies = new ArrayList<String>();
+                
+                while (moviesByUser.hasNext()) {
+                	DBObject m = moviesByUser.next();
+                	movies.add(m.get("movie").toString());
+                }
                
                 //Convert FriendsStr to ArrayList<String>
                 ArrayList<String> friends = new ArrayList<String>();
@@ -74,12 +87,13 @@ public class UserCollection {
                 	Float movieRating = Float.parseFloat(ratingsList.get(i).substring(ratingsList.get(i).lastIndexOf("=")+1));
                 	ratings.put(movie, movieRating);
                 }
-                
-                //Finally, add user to Collection
-                User newUser = new User(name, ratings, friends, genre);
+                                
+                // Finally, add user to Collection
+                User newUser = new User(name, ratings, friends, movies, genre);
                 System.out.println("Name :" + newUser.getName());
     			System.out.println("freinds :" + newUser.getFreinds().toString());
     			System.out.println("ratings :" + newUser.getRatings().toString());
+    			System.out.println("movies :" + newUser.getMovies().toString());
     			System.out.println("genre :" + newUser.getBuffGenre());
     			
                 this.addUser(newUser);
