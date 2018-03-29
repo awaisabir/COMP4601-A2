@@ -1,14 +1,26 @@
 package edu.carleton.comp4601.categories;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 
+import org.jgrapht.graph.DefaultEdge;
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import com.mongodb.BasicDBList;
+import com.mongodb.BasicDBObject;
 import com.mongodb.util.Hash;
 
 import Jama.Matrix;
+import edu.carleton.comp4601.graph.CrawlGraph;
+import edu.carleton.comp4601.graph.SocialNetwork;
+import edu.carleton.comp4601.repository.Marshaller;
+import edu.carleton.comp4601.repository.MyMongoClient;
+import edu.carleton.comp4601.userdata.UserCollection;
 
 public class UserCommunityFinder {
 	HashSet<String> testFriendsList = new HashSet<String>(Arrays.asList("A2S166WSCFIFP5","A109LWN9DUGPDP","AJKWF4W7QD4NS"));
@@ -28,7 +40,30 @@ public class UserCommunityFinder {
 		testMovieList.put("A109LWN9DUGPDP",new HashSet<String>(Arrays.asList("B007XF4J66", "630395345X", "B00871C09S", "B00004CIQG", "B000F0V0LI", "B000F0V0LI")));
 		testMovieList.put("AJKWF4W7QD4NS",new HashSet<String>(Arrays.asList("B007XF4J66", "B00004CIQG", "B00158K0S8", "B00007FCTH", "B000F0V0LI")));
 	}
-	public HashSet<String> getFriendsOfAndIncluding(String user) {
+	
+	public String getPrediction(String user) {
+		HashSet<String> friends = getFriendsOfAndIncluding(user);
+		ArrayList<String> movies = new ArrayList<String>(getMoviesRatedBy(friends));
+		Matrix m = getMatrixOfUserMovieReviews(new ArrayList<String>(friends),movies);
+		HashMap<String, Integer> genres = new HashMap<String, Integer>(Categorizer.MOVIE_GENRE.length);
+		for(int j = 0; j<genres.size(); j++)
+			genres.put(Categorizer.MOVIE_GENRE[j], 0);
+		for(int i = 0; i< m.getColumnDimension(); i++)
+			if(m.get(0, i) == 1d) {
+				String gkey = MyMongoClient.getInstance().findObject("COMP4601-A2", "reviews", new BasicDBObject("movie",movies.get(i))).getString("genre");
+				genres.put(gkey, genres.get(gkey)+1);
+			}
+		String maxgenre = Categorizer.MOVIE_GENRE[0];
+		for(String key: genres.keySet())
+			if(genres.get(key) > genres.get(maxgenre))
+				maxgenre = key;
+		
+		return maxgenre;
+		
+		
+	}
+	
+	private HashSet<String> getFriendsOfAndIncluding(String user) {
 		HashSet<String> friends = new HashSet<String>();
 		friends.add(user);
 		for(String friend: getFriendsOf(user))
@@ -36,7 +71,7 @@ public class UserCommunityFinder {
 		return friends;
 	}
 	
-	public HashSet<String> getMoviesRatedBy(HashSet<String> friends) {
+	private HashSet<String> getMoviesRatedBy(HashSet<String> friends) {
 		HashSet<String> movies = new HashSet<String>();
 		for(String friend: friends)
 			for(String movie: getMoviesOf(friend))
@@ -44,7 +79,7 @@ public class UserCommunityFinder {
 		return movies;
 	}
 	
-	public Matrix getMatrixOfUserMovieReviews(ArrayList<String> users, ArrayList<String> movies) {
+	private Matrix getMatrixOfUserMovieReviews(ArrayList<String> users, ArrayList<String> movies) {
 		Matrix userMovieReviews = new Matrix(users.size(), movies.size(),-1d);
 		for(String user: users)
 			for(String movie: getMoviesOf(user))
@@ -133,38 +168,58 @@ public class UserCommunityFinder {
 	
 	
 	private String getReviewContent(String user, String movie) {
-		switch(movie){
-		case "B00871C09S":
-		case "B00007FCTH":
-			return "I've had a lot of recent HD, Blu-ray version letdowns and this is certainly one of them, I won't review the movie because I assume any would be buyer is already a fan, but you should check this out since it does come with the old B&W classic original. Basically many of the scenes simply look BLURRY and out of focus, it's unavoidably noticeable and made me CRINGE in agony upon seeing such scenes in the movie. To me this is an overall letdown and I don't know if they can put out a better version... maybe it's just the nature of the source material that cannot be enhanced without also enhancing original problems with those certain camera shots?";
-		case "B000F0V0LI":
-		case "B00004CIQG":
-			return "The 5 stars are for the film, 0 for this edition. Universal could easily have redone the sound on the last anniversary edition, but their marketing scheme was to wait a few years and then do it. I'm not being suckered into double dipping. My edition is just fine. What will the next edition have, a thread from Montana's suit? Spare me.";			
-		case "630395345X":
-		case "B00158K0S8":
-			return "Since the invention of the dvd we've been waiting for this trilogy to be released, and now it finally has. But what can you say about it? It contains one of the classic heroes, one of the greatest films ever made, in fact one of the best trilogies we have and a bonus disk full of all kinds of great stuff. You have two of our best filmmakers coming together with one of our greatest actors. Classic stuff.";
-		}
-		return UserCommunityFinder.NO_REVIEW;
+		if(MyMongoClient.getInstance().findObject("COMP4601-A2", "reviews", new BasicDBObject("user",user).append("movie", movie)) == null)
+			return UserCommunityFinder.NO_REVIEW;
+		return MyMongoClient.getInstance().findObject("COMP4601-A2", "reviews", new BasicDBObject("user",user).append("movie", movie)).getString("review");
+		
 	}
 	
 	
 	private HashSet<String> getMoviesOf(String friend) {
-		return testMovieList.get(friend);
+		return new HashSet<String>(UserCollection.getInstance().getUser(friend).getMovies());
 	}
 	
 	private HashSet<String> getFriendsOf(String user) {
-		return testUserRelationships.get(user);
+		HashSet<String> friends = new HashSet<String>();
+		BasicDBObject obj = MyMongoClient.getInstance().findObject("COMP4601-A2", "users", new BasicDBObject("name",user));
+		if(obj != null){
+			JSONArray arr = new JSONArray(obj.getString("friends"));
+			for(int i = 0; i<arr.length(); i++)
+				friends.add(arr.getString(i));
+		}
+		return friends;
 	}
 	
 	public static void main(String[] args) {
+		try {
+			CrawlGraph.setInstance((CrawlGraph)Marshaller.deserializeObject((byte[])MyMongoClient.getInstance().findObject("COMP4601-A2", "graph", new BasicDBObject()).get("reviewsGraph")));
+			SocialNetwork.setInstance((SocialNetwork)Marshaller.deserializeObject((byte[])MyMongoClient.getInstance().findObject("COMP4601-A2", "graph", new BasicDBObject()).get("socialNetwork")));
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+//		System.out.println(SocialNetwork.getInstance().getGraph().vertexSet());
 		UserCommunityFinder finder = new UserCommunityFinder();
+		System.out.println(finder.getFriendsOfAndIncluding("ABSX5TGEGRH76"));
+		System.out.println(finder.getMoviesOf("ABSX5TGEGRH76"));
+		HashMap<String,Integer> genres = new HashMap<String,Integer>();
+		ArrayList genreNames = new ArrayList<>(Arrays.asList(Categorizer.MOVIE_GENRE));
+		for(String genre: Categorizer.MOVIE_GENRE)
+			genres.put(genre, 0);
+		for(BasicDBObject obj: MyMongoClient.getInstance().findObjects("COMP4601-A2", "users", new BasicDBObject())) {
+			HashSet<String> f = finder.getFriendsOfAndIncluding(obj.getString("name"));
+			ArrayList<String> mov = new ArrayList<String>(finder.getMoviesRatedBy(f));
+			Matrix m = finder.getMatrixOfUserMovieReviews(new ArrayList<String>(f), mov);
+
+		}
 		
-		finder.getMatrixOfUserMovieReviews(
-				new ArrayList<String>(finder.getFriendsOfAndIncluding("AJKWF4W7QD4NS")), 
-				new ArrayList<String>(finder.getMoviesRatedBy(finder.getFriendsOfAndIncluding("AJKWF4W7QD4NS")))
-		).print(2, 2);
-		
-		for(String movie: finder.getMoviesRatedBy(finder.getFriendsOfAndIncluding("AJKWF4W7QD4NS")))
-			System.out.print(movie + " ");
+//		System.out.println(finder.getMoviesOf("ABSX5TGEGRH76"));
+//		finder.getMatrixOfUserMovieReviews(
+//				new ArrayList<String>(finder.getFriendsOfAndIncluding("AJKWF4W7QD4NS")), 
+//				new ArrayList<String>(finder.getMoviesRatedBy(finder.getFriendsOfAndIncluding("AJKWF4W7QD4NS")))
+//		).print(2, 2);
+//		
+//		for(String movie: finder.getMoviesRatedBy(finder.getFriendsOfAndIncluding("AJKWF4W7QD4NS")))
+//			System.out.print(movie + " ");
 	}
 }

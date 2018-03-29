@@ -35,6 +35,7 @@ public class UserCollection {
 	//Constructor
 	public UserCollection(){
 		users = new ArrayList<User>();
+		popluateCollection();
 	}
 	
 	//Utility Methods
@@ -42,6 +43,13 @@ public class UserCollection {
 	
 	//Getters
 	public ArrayList<User> getUsers(){ return users; }
+	
+	public User getUser(String user){
+		for(User u: users)
+			if(u.getName() == user)
+				return u;
+		return null;
+	}
 	
 	//Utility Methods
 	public void popluateCollection(){

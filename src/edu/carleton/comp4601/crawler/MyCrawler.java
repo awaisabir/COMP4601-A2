@@ -84,6 +84,7 @@ public class MyCrawler extends WebCrawler {
 		
 		String url = page.getWebURL().getURL();
 		System.out.println("URL: " + url);
+		getMyController().getConfig().setPolitenessDelay((int)(System.currentTimeMillis() - crawltime)*10);
 		
 		if (page.getParseData() instanceof HtmlParseData) {
 			HtmlParseData htmlParseData = (HtmlParseData) page.getParseData();
@@ -171,7 +172,6 @@ public class MyCrawler extends WebCrawler {
 				
 				//temp list for friends
 				ArrayList<String> friends = new ArrayList<String>();
-				
 				while (p.find()) {
 					//-Parse Name
 					String userFriendName = p.group(1).substring(
