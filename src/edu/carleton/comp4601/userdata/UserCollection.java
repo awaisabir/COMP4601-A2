@@ -1,6 +1,5 @@
 package edu.carleton.comp4601.userdata;
 
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -49,7 +48,7 @@ public class UserCollection {
 		//Mongo Setup
 		MyMongoClient mc = MyMongoClient.getInstance();
 		DB database = mc.getDB();
-		DBCollection users = database.getCollection("user");
+		DBCollection users = database.getCollection("users");
 		DBCollection reviews = database.getCollection("reviews");
 		
 		DBCursor curs = users.find();
@@ -90,21 +89,11 @@ public class UserCollection {
                                 
                 // Finally, add user to Collection
                 User newUser = new User(name, ratings, friends, movies, genre);
-                System.out.println("Name :" + newUser.getName());
-    			System.out.println("freinds :" + newUser.getFreinds().toString());
-    			System.out.println("ratings :" + newUser.getRatings().toString());
-    			System.out.println("movies :" + newUser.getMovies().toString());
-    			System.out.println("genre :" + newUser.getBuffGenre());
-    			
                 this.addUser(newUser);
             }
 
         } catch (MongoException x) {
             x.printStackTrace();
         }
-		
-		
-
 	}
-
 }
