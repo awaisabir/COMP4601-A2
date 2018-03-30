@@ -106,6 +106,16 @@ public class Categorizer {
 		trainingData.put("B007XF4J70", 0);
 		trainingData.put("B004RE29T0", 2);
 		trainingData.put("B0000DK4QJ", 0);
+        trainingData.put("0784010331", 0);
+        trainingData.put("0792158288", 0);
+        trainingData.put("0792140923", 1);
+        trainingData.put("0794342322", 1);
+        trainingData.put("0790742942", 1);
+        trainingData.put("0800141709", 1);
+        trainingData.put("080017948X", 1);
+        trainingData.put("0767800117", 0);
+        trainingData.put("B000VDDWEC", 2);
+        trainingData.put("B0000C24F3", 2);
 		
 		//POPULATE
 		System.out.println("IN TRAIN");

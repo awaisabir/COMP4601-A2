@@ -45,7 +45,7 @@ public class UserCollection {
 	
 	public User getUser(String user){
 		for(User u: users)
-			if(u.getName() == user)
+			if(u.getName().equals(user))
 				return u;
 		
 		return null;

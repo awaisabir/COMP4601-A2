@@ -20,6 +20,7 @@ import edu.carleton.comp4601.graph.CrawlGraph;
 import edu.carleton.comp4601.graph.SocialNetwork;
 import edu.carleton.comp4601.repository.Marshaller;
 import edu.carleton.comp4601.repository.MyMongoClient;
+import edu.carleton.comp4601.userdata.User;
 import edu.carleton.comp4601.userdata.UserCollection;
 
 public class UserCommunityFinder {
@@ -46,12 +47,15 @@ public class UserCommunityFinder {
 		ArrayList<String> movies = new ArrayList<String>(getMoviesRatedBy(friends));
 		Matrix m = getMatrixOfUserMovieReviews(new ArrayList<String>(friends),movies);
 		HashMap<String, Integer> genres = new HashMap<String, Integer>(Categorizer.MOVIE_GENRE.length);
-		for(int j = 0; j<genres.size(); j++)
+		ArrayList<String> genreNames = new ArrayList<String>(Arrays.asList(Categorizer.MOVIE_GENRE));
+		for(int j = 0; j<Categorizer.MOVIE_GENRE.length; j++)
 			genres.put(Categorizer.MOVIE_GENRE[j], 0);
+		System.out.println(genres.toString());
 		for(int i = 0; i< m.getColumnDimension(); i++)
 			if(m.get(0, i) == 1d) {
-				String gkey = MyMongoClient.getInstance().findObject("COMP4601-A2", "reviews", new BasicDBObject("movie",movies.get(i))).getString("genre");
-				genres.put(gkey, genres.get(gkey)+1);
+				int gkey = MyMongoClient.getInstance().findObject("COMP4601-A2", "movieNames", new BasicDBObject("movieName",movies.get(i))).getInt("genre");
+				System.out.println(gkey + ":" +  genreNames.get(gkey));
+				genres.put(genreNames.get(gkey), genres.get(genreNames.get(gkey))+1);
 			}
 		String maxgenre = Categorizer.MOVIE_GENRE[0];
 		for(String key: genres.keySet())
@@ -205,18 +209,23 @@ public class UserCommunityFinder {
 		}
 //		System.out.println(SocialNetwork.getInstance().getGraph().vertexSet());
 		UserCommunityFinder finder = new UserCommunityFinder();
-		System.out.println(finder.getFriendsOfAndIncluding("ABSX5TGEGRH76"));
-		System.out.println(finder.getMoviesOf("ABSX5TGEGRH76"));
-		HashMap<String,Integer> genres = new HashMap<String,Integer>();
-		ArrayList genreNames = new ArrayList<>(Arrays.asList(Categorizer.MOVIE_GENRE));
-		for(String genre: Categorizer.MOVIE_GENRE)
-			genres.put(genre, 0);
-		for(BasicDBObject obj: MyMongoClient.getInstance().findObjects("COMP4601-A2", "users", new BasicDBObject())) {
-			HashSet<String> f = finder.getFriendsOfAndIncluding(obj.getString("name"));
-			ArrayList<String> mov = new ArrayList<String>(finder.getMoviesRatedBy(f));
-			Matrix m = finder.getMatrixOfUserMovieReviews(new ArrayList<String>(f), mov);
-
+		for(User u: UserCollection.getInstance().getUsers()) {
+			u.setBuffGenre(finder.getPrediction(u.getName()));
+			BasicDBObject obj = MyMongoClient.getInstance().findObject("COMP4601-A2", "users", new BasicDBObject("name", u.getName()));
+			obj.put("genre", u.getBuffGenre());
+			MyMongoClient.getInstance().updateInCollection("COMP4601-A2", "users", new BasicDBObject("name", u.getName()), obj);
 		}
+//		System.out.println(finder.getMoviesOf("ABSX5TGEGRH76"));
+//		HashMap<String,Integer> genres = new HashMap<String,Integer>();
+//		ArrayList genreNames = new ArrayList<>(Arrays.asList(Categorizer.MOVIE_GENRE));
+//		for(String genre: Categorizer.MOVIE_GENRE)
+//			genres.put(genre, 0);
+//		for(BasicDBObject obj: MyMongoClient.getInstance().findObjects("COMP4601-A2", "users", new BasicDBObject())) {
+//			HashSet<String> f = finder.getFriendsOfAndIncluding(obj.getString("name"));
+//			ArrayList<String> mov = new ArrayList<String>(finder.getMoviesRatedBy(f));
+//			Matrix m = finder.getMatrixOfUserMovieReviews(new ArrayList<String>(f), mov);
+//
+//		}
 		
 //		System.out.println(finder.getMoviesOf("ABSX5TGEGRH76"));
 //		finder.getMatrixOfUserMovieReviews(
