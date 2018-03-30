@@ -48,6 +48,7 @@ public class UserCollection {
 		for(User u: users)
 			if(u.getName() == user)
 				return u;
+		
 		return null;
 	}
 	
@@ -73,12 +74,12 @@ public class UserCollection {
                 DBObject query = new BasicDBObject();
                 query.put("user", name);
                 
+                HashMap<String, Float> ratings = new HashMap<String, Float>();
+
                 DBCursor moviesByUser = reviews.find(query);
-                ArrayList<String> movies = new ArrayList<String>();
-                
                 while (moviesByUser.hasNext()) {
                 	DBObject m = moviesByUser.next();
-                	movies.add(m.get("movie").toString());
+                	ratings.put(m.get("movie").toString(), -1f);
                 }
                
                 //Convert FriendsStr to ArrayList<String>
@@ -86,17 +87,16 @@ public class UserCollection {
                 friends.addAll(Arrays.asList(friendsStr.substring(1, friendsStr.length() - 1).split(", ")));
               
                 //Convert ratingsStr to HashMap<String, Float>
-                HashMap<String, Float> ratings = new HashMap<String, Float>();
-                List<String> ratingsList = Arrays.asList(ratingsStr.substring(1, ratingsStr.length() - 1).split(", "));
+                /* List<String> ratingsList = Arrays.asList(ratingsStr.substring(1, ratingsStr.length() - 1).split(", "));
                 
                 for(int i=0; i<ratingsList.size(); i++){
                 	String movie      = ratingsList.get(i).substring(0, ratingsList.get(i).lastIndexOf("="));
                 	Float movieRating = Float.parseFloat(ratingsList.get(i).substring(ratingsList.get(i).lastIndexOf("=")+1));
                 	ratings.put(movie, movieRating);
-                }
+                } */
                                 
                 // Finally, add user to Collection
-                User newUser = new User(name, ratings, friends, movies, genre);
+                User newUser = new User(name, ratings, friends, genre);
                 this.addUser(newUser);
             }
 
