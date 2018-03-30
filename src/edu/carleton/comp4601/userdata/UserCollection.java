@@ -3,7 +3,6 @@ package edu.carleton.comp4601.userdata;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -68,7 +67,6 @@ public class UserCollection {
                 DBObject o = curs.next();
                 String name       = (String) o.get("name") ; 
                 String friendsStr = (String) o.get("friends") ; 
-                String ratingsStr = (String) o.get("ratings") ; 
                 String genre      = (String) o.get("genre") ;
                 
                 DBObject query = new BasicDBObject();
