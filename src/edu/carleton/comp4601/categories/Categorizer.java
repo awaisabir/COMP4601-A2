@@ -122,7 +122,10 @@ public class Categorizer {
 	    for(String movie: dataToTrain.keySet()) {
 
 	    	BasicDBObject m = new BasicDBObject("movieName", movie);
-	    	MyMongoClient.getInstance().updateInCollection("COMP4601-A2", "movieNames", m, m.append("genre",dataToTrain.get(movie)));
+	    
+	    	BasicDBObject m2 =  new BasicDBObject("movieName", movie);
+	    	m2.put("genre", dataToTrain.get(movie));
+	    	MyMongoClient.getInstance().updateInCollection("COMP4601-A2", "movieNames", m, m2);
 	    }
 	    System.out.println("size of dataToTrain: " + dataToTrain.size());
 	}

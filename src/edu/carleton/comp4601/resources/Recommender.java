@@ -95,16 +95,15 @@ public class Recommender {
 		//html and table style setup
 		String html = "<html> <body> <head><style>table, th, td {border: 1px solid black;}</style></head>";
 		
-		//IMPORTANT TO NOTE: this is just temporary, we will probably find better place to start crawl
+		//NOT A FINAL SOLUTION-------------------------------------------
 		try { 
-			String[] args = new String[3];
-			Controller.main(args);
+			//ENSURE YOU HAVE CRAWLED
 			UserCollection.getInstance().popluateCollection();
 			
 		} 
 		catch (Exception e) { e.printStackTrace(); }
-		
-		
+		//---------------------------------------------------------------
+		System.out.println("Popluate Collection Done");
 		
 		//Table setup
 		html = html + "<table style= \"width:100%\"> <tr> <th>Name</th> <th>Movie Buff</th> <th>Ratings</th> <th>Friends</th> </tr>";
@@ -118,6 +117,7 @@ public class Recommender {
 				html = html + users.get(i).getFreinds().get(f) + ", ";
 			}
 		}
+		
 		
 		//closing html setup
 		html = html + "</td>   </tr> </table></body></html>";	     

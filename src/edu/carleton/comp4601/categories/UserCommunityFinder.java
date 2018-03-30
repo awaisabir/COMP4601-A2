@@ -176,7 +176,12 @@ public class UserCommunityFinder {
 	
 	
 	private HashSet<String> getMoviesOf(String friend) {
-		return new HashSet<String>(UserCollection.getInstance().getUser(friend).getMovies());
+		HashSet<String> movies = new HashSet<String>();
+		for (String rating : UserCollection.getInstance().getUser(friend).getRatings().keySet()){
+			movies.add(rating);
+		}
+		
+		return movies;
 	}
 	
 	private HashSet<String> getFriendsOf(String user) {

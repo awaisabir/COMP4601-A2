@@ -143,6 +143,7 @@ public class MyCrawler extends WebCrawler {
 				if (pageTitle.startsWith("B") || Character.isDigit(pageTitle.charAt(0))) {
 					BasicDBObject nameToAdd = new BasicDBObject();
 					nameToAdd.put("movieName", document.title().toString());
+					nameToAdd.put("genre", "null");
 					movieNames.insert(nameToAdd);	
 				}
 				
