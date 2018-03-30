@@ -30,11 +30,14 @@ import org.apache.lucene.queryparser.classic.ParseException;
 import Jama.Matrix;
 import edu.carleton.comp4601.categories.Categorizer;
 import edu.carleton.comp4601.crawler.Controller;
+import edu.carleton.comp4601.repository.MyMongoClient;
 import edu.carleton.comp4601.userdata.User;
 import edu.carleton.comp4601.userdata.UserCollection;
 //import edu.carleton.comp4601.resources.MyValues;
 
 import org.json.*;
+
+import com.mongodb.BasicDBObject;
 @Path("/")
 public class Recommender {
 
@@ -84,6 +87,21 @@ public class Recommender {
 	public String categ() {
 		Categorizer c = new Categorizer();
 		return "{" + "fuck" + "}";
+	}
+	
+	
+	@GET
+	@Path("/advertising/{genre}")
+	@Produces(MediaType.TEXT_HTML)
+	public String advertising(@PathParam("genre") String genre){
+		String html = "<html><head>\n<style>\n.images {text-align: center}\n img {max-height: 250px\n}\n</style></head><body><div class=\"images\">";
+		
+		for(BasicDBObject advert: MyMongoClient.getInstance().findObjects("COMP4601-A2", "Advertising", new BasicDBObject("genre", genre))){
+			html = html + " " + advert.getString("value");
+		}
+		html = html + "</div> </body> </html>";
+		
+		return html;
 	}
 	
 	@GET
