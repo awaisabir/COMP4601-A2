@@ -38,6 +38,7 @@ import edu.carleton.comp4601.userdata.UserCollection;
 import org.json.*;
 
 import com.mongodb.BasicDBObject;
+import com.mongodb.DBCollection;
 @Path("/")
 public class Recommender {
 
@@ -187,4 +188,24 @@ public class Recommender {
 		return html;
 	}
 	
+	@GET
+	@Path("/{user}/{page}")
+	@Produces(MediaType.TEXT_HTML)
+	public String advertising(@PathParam("user") String user, @PathParam("page") String page){
+		String html = "<html><head><style>.advertising {text-align: center;position:relative;float:left;max-width:15%;padding: 0 0 2em 0 }img {max-height: 250px;}.review {position:relative;float:left;max-width:80%;}</style></head><body><div class=\"review\">";
+		BasicDBObject u = MyMongoClient.getInstance().findObject("COMP4601-A2", "users", new BasicDBObject("name", user));
+		BasicDBObject review = MyMongoClient.getInstance().findObject("COMP4601-A2", "reviews", new BasicDBObject("user", user).append("movie", page));
+		if(review != null)
+			html = html + "<h2>" + user + "'s Review of " + page + "</h2><p>" + review.getString("review") + "</p>";
+		else
+			html = html + "<p> The user did not review this movie </p>";
+		html = html + "</div> <div class=\"advertising\"><h3>Movie you might like:</h3>";
+		if(u != null) {
+			ArrayList<BasicDBObject> genreAds = MyMongoClient.getInstance().findObjects("COMP4601-A2", "Advertising", new BasicDBObject("genre", u.getString("genre")));
+			html = html + genreAds.get(((int)(Math.random()*genreAds.size()))).getString("value");
+		}
+		html = html + "</div> </body> </html>";
+		
+		return html;
+	}
 }
