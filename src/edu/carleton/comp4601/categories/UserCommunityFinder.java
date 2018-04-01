@@ -50,11 +50,9 @@ public class UserCommunityFinder {
 		ArrayList<String> genreNames = new ArrayList<String>(Arrays.asList(Categorizer.MOVIE_GENRE));
 		for(int j = 0; j<Categorizer.MOVIE_GENRE.length; j++)
 			genres.put(Categorizer.MOVIE_GENRE[j], 0);
-		System.out.println(genres.toString());
 		for(int i = 0; i< m.getColumnDimension(); i++)
 			if(m.get(0, i) == 1d) {
 				int gkey = MyMongoClient.getInstance().findObject("COMP4601-A2", "movieNames", new BasicDBObject("movieName",movies.get(i))).getInt("genre");
-				System.out.println(gkey + ":" +  genreNames.get(gkey));
 				genres.put(genreNames.get(gkey), genres.get(genreNames.get(gkey))+1);
 			}
 		String maxgenre = Categorizer.MOVIE_GENRE[0];
@@ -78,25 +76,27 @@ public class UserCommunityFinder {
 	private HashSet<String> getMoviesRatedBy(HashSet<String> friends) {
 		HashSet<String> movies = new HashSet<String>();
 		for(String friend: friends)
-			for(String movie: getMoviesOf(friend))
-				movies.add(movie);
+			movies.addAll(getMoviesOf(friend));
 		return movies;
 	}
 	
 	private Matrix getMatrixOfUserMovieReviews(ArrayList<String> users, ArrayList<String> movies) {
 		Matrix userMovieReviews = new Matrix(users.size(), movies.size(),-1d);
 		for(String user: users)
-			for(String movie: getMoviesOf(user))
-				if(getReviewContent(user, movie) != UserCommunityFinder.NO_REVIEW)
-					userMovieReviews.set(users.indexOf(user), movies.indexOf(movie), UserRatingSentiment.getReviewSentiment(getReviewContent(user, movie)));
+			for(String movie: getMoviesOf(user)){
+//				String content = getReviewContent(user, movie);
+//				if(content != UserCommunityFinder.NO_REVIEW)
+					userMovieReviews.set(users.indexOf(user), movies.indexOf(movie), UserCollection.getInstance().getUser(user).getRatings().get(movie));//UserRatingSentiment.getReviewSentiment(content));
+			}
 		return replaceAllMissingReviews(userMovieReviews);
 	}
 	
 	
 	private Matrix replaceAllMissingReviews(Matrix m){
 		Matrix initialM = m.copy();
-		m.print(1,1);
-		for(int i = 0; i<m.getRowDimension(); i++)
+//		m.print(1,1);
+//		for(int i = 0; i<m.getRowDimension(); i++)
+		int i = 0;
 			for(int j = 0; j< m.getColumnDimension(); j++)
 				if(initialM.get(i, j) == -1d)
 					m.set(i,j,pred(i, j, initialM));
@@ -180,23 +180,20 @@ public class UserCommunityFinder {
 	
 	
 	private HashSet<String> getMoviesOf(String friend) {
-		HashSet<String> movies = new HashSet<String>();
-		for (String rating : UserCollection.getInstance().getUser(friend).getRatings().keySet()){
-			movies.add(rating);
-		}
-		
-		return movies;
+		return new HashSet<>(UserCollection.getInstance().getUser(friend).getRatings().keySet());
 	}
 	
 	private HashSet<String> getFriendsOf(String user) {
-		HashSet<String> friends = new HashSet<String>();
-		BasicDBObject obj = MyMongoClient.getInstance().findObject("COMP4601-A2", "users", new BasicDBObject("name",user));
-		if(obj != null){
-			JSONArray arr = new JSONArray(obj.getString("friends"));
-			for(int i = 0; i<arr.length(); i++)
-				friends.add(arr.getString(i));
-		}
-		return friends;
+//		HashSet<String> friends = new HashSet<String>();
+//		BasicDBObject obj = MyMongoClient.getInstance().findObject("COMP4601-A2", "users", new BasicDBObject("name",user));
+//		if(obj != null){
+//			JSONArray arr = new JSONArray(obj.getString("friends"));
+//			for(int i = 0; i<arr.length(); i++)
+//				friends.add(arr.getString(i));
+//		}
+//		return friends;
+
+		return new HashSet<>(UserCollection.getInstance().getUser(user).getFreinds());
 	}
 	
 	public static void main(String[] args) {
@@ -214,6 +211,7 @@ public class UserCommunityFinder {
 			BasicDBObject obj = MyMongoClient.getInstance().findObject("COMP4601-A2", "users", new BasicDBObject("name", u.getName()));
 			obj.put("genre", u.getBuffGenre());
 			MyMongoClient.getInstance().updateInCollection("COMP4601-A2", "users", new BasicDBObject("name", u.getName()), obj);
+			System.out.print(u.getName() + ": " + u.getBuffGenre());
 		}
 //		System.out.println(finder.getMoviesOf("ABSX5TGEGRH76"));
 //		HashMap<String,Integer> genres = new HashMap<String,Integer>();

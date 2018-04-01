@@ -13,6 +13,7 @@ import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 import com.mongodb.MongoException;
 
+import edu.carleton.comp4601.categories.UserRatingSentiment;
 import edu.carleton.comp4601.repository.MyMongoClient;
 
 @XmlRootElement
@@ -77,7 +78,7 @@ public class UserCollection {
                 DBCursor moviesByUser = reviews.find(query);
                 while (moviesByUser.hasNext()) {
                 	DBObject m = moviesByUser.next();
-                	ratings.put(m.get("movie").toString(), -1f);
+                	ratings.put(m.get("movie").toString(), (float)UserRatingSentiment.getReviewSentiment(m.get("review").toString()));
                 }
                
                 //Convert FriendsStr to ArrayList<String>
