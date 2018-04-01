@@ -109,7 +109,6 @@ public class Categorizer {
         trainingData.put("0784010331", 0);
         trainingData.put("0792158288", 0);
         trainingData.put("0792140923", 1);
-        trainingData.put("0794342322", 1);
         trainingData.put("0790742942", 1);
         trainingData.put("0800141709", 1);
         trainingData.put("080017948X", 1);
