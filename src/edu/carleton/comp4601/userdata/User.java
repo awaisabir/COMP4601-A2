@@ -23,7 +23,7 @@ public class User {
 		//IMPORTANT NOTE: This is just used for testing!
 		Random rand = new Random();
 		int  n = rand.nextInt(3) + 0;
-		buffGenre = MyValues.movieGenre[n];
+		buffGenre = "";//MyValues.movieGenre[n];
 		
 		ratings = new HashMap<String, Float>();
 		friends = new ArrayList<String>();

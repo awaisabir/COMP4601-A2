@@ -1,5 +1,10 @@
 package edu.carleton.comp4601.categories;
 
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.Reader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.regex.Matcher;
@@ -54,13 +59,30 @@ public class Categorizer {
             reviewsArr.add(reviewText);
 		}
 		
-		
+		BufferedReader br;
+
+		String line;
+		ArrayList<String> stopwords = new ArrayList<>();
+		try {
+			br = new BufferedReader(new FileReader("./src/edu/carleton/comp4601/categories/stop.txt"));
+			while((line = br.readLine()) != null) {
+				for(String word: line.split(" "))
+					stopwords.add(word);
+			}
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
 		wordCount = new HashMap<String, Integer>();
 		for(String review: reviewsArr) {
 			Matcher m = Pattern.compile("([\\w]*)\\s").matcher(review);
 			counter = 0;
 			while(m.find() && counter++ < 100){
-				if(!wordCount.containsKey(m.group(1)))
+				if(!stopwords.contains(m.group(1)) && !wordCount.containsKey(m.group(1)))
 					wordCount.put(m.group(1), 0);
 			}
 		}

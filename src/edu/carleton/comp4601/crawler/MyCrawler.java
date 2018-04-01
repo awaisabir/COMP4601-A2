@@ -86,7 +86,7 @@ public class MyCrawler extends WebCrawler {
 		System.out.println("URL: " + url);
 		getMyController().getConfig().setPolitenessDelay((int)(System.currentTimeMillis() - crawltime)*10);
 		
-		if (page.getParseData() instanceof HtmlParseData) {
+		if (page.getParseData() instanceof HtmlParseData && !page.getWebURL().getURL().equals("https://sikaman.dyndns.org/courses/4601/assignments/training/pages/") && !page.getWebURL().getURL().equals("https://sikaman.dyndns.org/courses/4601/assignments/training/graph/")) {
 			HtmlParseData htmlParseData = (HtmlParseData) page.getParseData();
 			Set<WebURL> links = htmlParseData.getOutgoingUrls();
 			
