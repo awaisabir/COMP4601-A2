@@ -1,17 +1,11 @@
 package edu.carleton.comp4601.crawler;
 
-import java.util.HashSet;
-
 import com.mongodb.BasicDBObject;
 
-import Jama.Matrix;
 import edu.carleton.comp4601.categories.Categorizer;
-import edu.carleton.comp4601.categories.UserCommunityFinder;
 import edu.carleton.comp4601.graph.*;
 import edu.carleton.comp4601.repository.Marshaller;
 import edu.carleton.comp4601.repository.MyMongoClient;
-import edu.carleton.comp4601.userdata.User;
-import edu.carleton.comp4601.userdata.UserCollection;
 import edu.uci.ics.crawler4j.crawler.CrawlConfig;
 
 import edu.uci.ics.crawler4j.crawler.CrawlController;

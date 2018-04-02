@@ -6,8 +6,6 @@ import java.util.Random;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
-import edu.carleton.comp4601.resources.MyValues;
-
 @XmlRootElement
 public class User {
 	
@@ -21,8 +19,6 @@ public class User {
 		this.name = name; 
 		
 		//IMPORTANT NOTE: This is just used for testing!
-		Random rand = new Random();
-		int  n = rand.nextInt(3) + 0;
 		buffGenre = "";//MyValues.movieGenre[n];
 		
 		ratings = new HashMap<String, Float>();

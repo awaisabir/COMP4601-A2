@@ -1,7 +1,5 @@
 package edu.carleton.comp4601.categories;
 
-import java.util.HashMap;
-
 public class UserRatingSentiment {
 	static int GOOD_SENTIMENT = 0;
 	static int BAD_SENTIMENT = 1;

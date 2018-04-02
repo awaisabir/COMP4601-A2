@@ -4,7 +4,6 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.Reader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.regex.Matcher;
@@ -17,7 +16,6 @@ import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 
 import edu.carleton.comp4601.repository.MyMongoClient;
-import edu.carleton.comp4601.userdata.UserCollection;
 import weka.classifiers.trees.RandomForest;
 import weka.core.Attribute;
 import weka.core.DenseInstance;
@@ -94,14 +92,6 @@ public class Categorizer {
 
 	public static void main(String[] args){
 		Categorizer c = new Categorizer();
-//		HashMap<String,Integer> words = c.getPageWords("ABC");
-//		String keyList = "", valList = "";
-//		for(String key: words.keySet()){
-//			keyList += key + "\t";
-//			valList += words.get(key) + "\t";
-//		}
-//		System.out.println(keyList);
-//		System.out.println(valList);
 	}
 	
 	

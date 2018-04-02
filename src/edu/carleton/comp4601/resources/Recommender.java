@@ -2,44 +2,27 @@ package edu.carleton.comp4601.resources;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
 
 //import javax.servlet.http.HttpServletResponse;
 //import javax.websocket.OnClose;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.DELETE;
-import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
-import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Request;
-import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
-//import org.apache.jasper.tagplugins.jstl.core.Set;
-import org.apache.lucene.queryparser.classic.ParseException;
-
-
-import Jama.Matrix;
-import edu.carleton.comp4601.categories.Categorizer;
 import edu.carleton.comp4601.categories.UserCommunityFinder;
 import edu.carleton.comp4601.crawler.Controller;
 import edu.carleton.comp4601.repository.MyMongoClient;
 import edu.carleton.comp4601.userdata.User;
 import edu.carleton.comp4601.userdata.UserCollection;
-//import edu.carleton.comp4601.resources.MyValues;
-
-import org.json.*;
 
 import com.mongodb.BasicDBObject;
-import com.mongodb.DBCollection;
+
 @Path("/")
 public class Recommender {
 

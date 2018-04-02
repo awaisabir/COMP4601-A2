@@ -5,15 +5,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 
-import org.jgrapht.graph.DefaultEdge;
-import org.json.JSONArray;
-import org.json.JSONObject;
-
-import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
-import com.mongodb.util.Hash;
 
 import Jama.Matrix;
 import edu.carleton.comp4601.graph.CrawlGraph;
