@@ -84,8 +84,6 @@ public class UserCommunityFinder {
 		Matrix userMovieReviews = new Matrix(users.size(), movies.size(),-1d);
 		for(String user: users)
 			for(String movie: getMoviesOf(user)){
-//				String content = getReviewContent(user, movie);
-//				if(content != UserCommunityFinder.NO_REVIEW)
 					userMovieReviews.set(users.indexOf(user), movies.indexOf(movie), UserCollection.getInstance().getUser(user).getRatings().get(movie));//UserRatingSentiment.getReviewSentiment(content));
 			}
 		return replaceAllMissingReviews(userMovieReviews);
@@ -184,15 +182,6 @@ public class UserCommunityFinder {
 	}
 	
 	private HashSet<String> getFriendsOf(String user) {
-//		HashSet<String> friends = new HashSet<String>();
-//		BasicDBObject obj = MyMongoClient.getInstance().findObject("COMP4601-A2", "users", new BasicDBObject("name",user));
-//		if(obj != null){
-//			JSONArray arr = new JSONArray(obj.getString("friends"));
-//			for(int i = 0; i<arr.length(); i++)
-//				friends.add(arr.getString(i));
-//		}
-//		return friends;
-
 		return new HashSet<>(UserCollection.getInstance().getUser(user).getFreinds());
 	}
 	
@@ -204,7 +193,7 @@ public class UserCommunityFinder {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-//		System.out.println(SocialNetwork.getInstance().getGraph().vertexSet());
+
 		UserCommunityFinder finder = new UserCommunityFinder();
 		for(User u: UserCollection.getInstance().getUsers()) {
 			u.setBuffGenre(finder.getPrediction(u.getName()));
@@ -213,25 +202,5 @@ public class UserCommunityFinder {
 			MyMongoClient.getInstance().updateInCollection("COMP4601-A2", "users", new BasicDBObject("name", u.getName()), obj);
 			System.out.print(u.getName() + ": " + u.getBuffGenre());
 		}
-//		System.out.println(finder.getMoviesOf("ABSX5TGEGRH76"));
-//		HashMap<String,Integer> genres = new HashMap<String,Integer>();
-//		ArrayList genreNames = new ArrayList<>(Arrays.asList(Categorizer.MOVIE_GENRE));
-//		for(String genre: Categorizer.MOVIE_GENRE)
-//			genres.put(genre, 0);
-//		for(BasicDBObject obj: MyMongoClient.getInstance().findObjects("COMP4601-A2", "users", new BasicDBObject())) {
-//			HashSet<String> f = finder.getFriendsOfAndIncluding(obj.getString("name"));
-//			ArrayList<String> mov = new ArrayList<String>(finder.getMoviesRatedBy(f));
-//			Matrix m = finder.getMatrixOfUserMovieReviews(new ArrayList<String>(f), mov);
-//
-//		}
-		
-//		System.out.println(finder.getMoviesOf("ABSX5TGEGRH76"));
-//		finder.getMatrixOfUserMovieReviews(
-//				new ArrayList<String>(finder.getFriendsOfAndIncluding("AJKWF4W7QD4NS")), 
-//				new ArrayList<String>(finder.getMoviesRatedBy(finder.getFriendsOfAndIncluding("AJKWF4W7QD4NS")))
-//		).print(2, 2);
-//		
-//		for(String movie: finder.getMoviesRatedBy(finder.getFriendsOfAndIncluding("AJKWF4W7QD4NS")))
-//			System.out.print(movie + " ");
 	}
 }

@@ -58,12 +58,6 @@ public class Controller {
 		
 		Categorizer c = new Categorizer();
 	}
-	
-	/*change the sites crawled
-	static String[] seeds = {
-		"https://sikaman.dyndns.org/courses/4601/assignments/training/pages/", 
-		"https://sikaman.dyndns.org/courses/4601/assignments/training/graph/"
-	};*/
 
 	public static void main(String[] args) throws Exception {
 		String[] seeds = {"https://sikaman.dyndns.org/courses/4601/assignments/training/pages/", "https://sikaman.dyndns.org/courses/4601/assignments/training/graph/"};
