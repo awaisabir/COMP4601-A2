@@ -25,6 +25,18 @@ public class UserRatingSentiment {
 		return BAD_SENTIMENT;
 	}
 	
+	public static String getReviewSentimentCountAsString(String reviewContent) {
+		int goodCount = 0, badCount = 0;
+		//HashMap<String,Integer> fieldCount = new HashMap<String, Integer>();
+		for(String fieldGood: UserRatingSentiment.goodSentimentFields)
+			goodCount += reviewContent.split("\\s?"+fieldGood+".*?\\s").length - 1;
+//			fieldCount.put(fieldGood, pageContent.split("\\s?"+fieldGood+"\\s").length - 1);
+		for(String fieldBad: UserRatingSentiment.badSentimentFields)
+			badCount += reviewContent.split("\\s?"+fieldBad+".*?\\s").length - 1;
+//			fieldCount.put(fieldBad, pageContent.split("\\s?"+fieldBad+"\\s").length - 1);
+		return  goodCount + "," + badCount;
+	}
+	
 	
 	
 	public static void main(String[] args) {
