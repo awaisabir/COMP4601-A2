@@ -107,8 +107,11 @@ public class MyMongoClient {
 	}
 	
 	public void dropCollection(String dbName, String collectionName) {
-		mc.getDB(dbName).getCollection(collectionName).drop();
-		db.get(dbName).remove(collectionName);
+		if (mc.getDB(dbName).getCollection(collectionName) != null) {
+			mc.getDB(dbName).getCollection(collectionName).drop();			
+			db.get(dbName).remove(collectionName);
+		}
+		
 	}
 	public void dropDB(String dbName) {
 		mc.getDB(dbName).dropDatabase();

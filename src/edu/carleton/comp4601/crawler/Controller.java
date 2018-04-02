@@ -5,6 +5,7 @@ import java.util.HashSet;
 import com.mongodb.BasicDBObject;
 
 import Jama.Matrix;
+import edu.carleton.comp4601.categories.Categorizer;
 import edu.carleton.comp4601.categories.UserCommunityFinder;
 import edu.carleton.comp4601.graph.*;
 import edu.carleton.comp4601.repository.Marshaller;
@@ -20,13 +21,8 @@ import edu.uci.ics.crawler4j.robotstxt.RobotstxtServer;
 
 public class Controller {
 	static int current = 0;
-	//change the sites crawled
-	static String[] seeds = {
-		"https://sikaman.dyndns.org/courses/4601/assignments/training/pages/", 
-		"https://sikaman.dyndns.org/courses/4601/assignments/training/graph/"
-	};
-
-	public static void main(String[] args) throws Exception {
+	
+	public Controller (String[] seeds) throws Exception {
 		String crawlStorageFolder = "/data/crawl/root";
 		int numberOfCrawlers = 10;
 		
@@ -60,16 +56,18 @@ public class Controller {
 				new BasicDBObject(), 
 				new BasicDBObject("socialNetwork",Marshaller.serializeObject(SocialNetwork.getInstance())).append("reviewsGraph",Marshaller.serializeObject(CrawlGraph.getInstance())));
 		
-//		UserCommunityFinder ucf = new UserCommunityFinder();
-//		UserCollection.getInstance().popluateCollection();
-//		for (User u: UserCollection.getInstance().getUsers()) {
-//			System.out.println(u.getName());
-//			BasicDBObject obj = MyMongoClient.getInstance().findObject("COMP4601-A2", "users", new BasicDBObject("name", u.getName()));
-//			obj.put("genre", ucf.getPrediction(u.getName()));
-//			MyMongoClient.getInstance().updateInCollection("COMP4601-A2", "users", new BasicDBObject("name", u.getName()), obj);
-//		}
-//		System.out.println("done");
-//		System.exit(0);
+		Categorizer c = new Categorizer();
+	}
+	
+	/*change the sites crawled
+	static String[] seeds = {
+		"https://sikaman.dyndns.org/courses/4601/assignments/training/pages/", 
+		"https://sikaman.dyndns.org/courses/4601/assignments/training/graph/"
+	};*/
+
+	public static void main(String[] args) throws Exception {
+		String[] seeds = {"https://sikaman.dyndns.org/courses/4601/assignments/training/pages/", "https://sikaman.dyndns.org/courses/4601/assignments/training/graph/"};
+		new Controller(seeds);
 	}
 
 }

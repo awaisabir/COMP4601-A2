@@ -29,6 +29,7 @@ import org.apache.lucene.queryparser.classic.ParseException;
 
 import Jama.Matrix;
 import edu.carleton.comp4601.categories.Categorizer;
+import edu.carleton.comp4601.categories.UserCommunityFinder;
 import edu.carleton.comp4601.crawler.Controller;
 import edu.carleton.comp4601.repository.MyMongoClient;
 import edu.carleton.comp4601.userdata.User;
@@ -75,21 +76,6 @@ public class Recommender {
 		return "<html> " + "<title>" + name + "</title>" + "<body><h1>" + name
 				+ "</body></h1>" + "</html> ";
 	}
-
-	@GET
-	@Produces(MediaType.APPLICATION_JSON)
-	public String sayJSON() {
-		return "{" + name + "}";
-	}
-	
-	@GET
-	@Path("/cat")
-	@Produces(MediaType.APPLICATION_JSON)
-	public String categ() {
-		Categorizer c = new Categorizer();
-		return "{" + "fuck" + "}";
-	}
-	
 	
 	@GET
 	@Path("/advertising/{genre}")
@@ -117,7 +103,7 @@ public class Recommender {
 		//NOT A FINAL SOLUTION-------------------------------------------
 		try { 
 			//ENSURE YOU HAVE CRAWLED
-			UserCollection.getInstance().popluateCollection();
+			UserCollection.getInstance();
 			
 		} 
 		catch (Exception e) { e.printStackTrace(); }
@@ -126,6 +112,15 @@ public class Recommender {
 		
 		//Table setup
 		html = html + "<table style= \"width:100%\"> <tr> <th>Name</th> <th>Movie Buff</th> <th>Ratings</th> <th>Friends</th> </tr>";
+		
+		UserCommunityFinder finder = new UserCommunityFinder();
+		for(User u: UserCollection.getInstance().getUsers()) {
+			u.setBuffGenre(finder.getPrediction(u.getName()));
+			BasicDBObject obj = MyMongoClient.getInstance().findObject("COMP4601-A2", "users", new BasicDBObject("name", u.getName()));
+			obj.put("genre", u.getBuffGenre());
+			MyMongoClient.getInstance().updateInCollection("COMP4601-A2", "users", new BasicDBObject("name", u.getName()), obj);
+			System.out.print(u.getName() + ": " + u.getBuffGenre());
+		}
 		
 		//Add each user as row in table
 		ArrayList<User> users = UserCollection.getInstance().getUsers();
@@ -186,6 +181,40 @@ public class Recommender {
 		}
 		
 		return html;
+	}
+	
+	@GET
+	@Path("/reset/{dir}")
+	@Produces(MediaType.TEXT_HTML)
+	public String reset(@PathParam("dir") String directory) {
+		MyMongoClient.getInstance().dropCollection("COMP4601-A2", "graph");
+		MyMongoClient.getInstance().dropCollection("COMP4601-A2", "movieNames");
+		MyMongoClient.getInstance().dropCollection("COMP4601-A2", "reviews");
+		MyMongoClient.getInstance().dropCollection("COMP4601-A2", "users");
+		
+		Thread crawlerThread = new Thread(new Runnable() {
+			
+			@Override
+			public void run() {
+				// TODO Auto-generated method stub
+				String[] seeds = {
+						"https://sikaman.dyndns.org/courses/4601/assignments/" + directory + "/pages",
+						"https://sikaman.dyndns.org/courses/4601/assignments/" + directory + "/graph"
+					};
+					
+					try {
+						Controller c = new Controller(seeds);
+					} catch (Exception e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				
+				}
+			});
+		
+		crawlerThread.start();
+		
+		return "We out here ...... ";
 	}
 	
 	@GET
