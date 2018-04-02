@@ -27,7 +27,7 @@ import weka.core.Instances;
 
 public class Categorizer {
 	//array containing the genres of movies we are looking for. ADD HERE for more genres to determine
-	static String[] MOVIE_GENRE = {"Action","Comedy","Horror"};	
+	public static String[] MOVIE_GENRE = {"Action","Comedy","Horror"};	
 	HashMap<String, Integer> wordCount;
 	int counter = 0;
 	RandomForest rfClassifier = null;
