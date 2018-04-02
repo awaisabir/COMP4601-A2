@@ -55,7 +55,7 @@ public class Recommender {
 
 	// adding a test document
 	public Recommender() throws IOException {
-		name = "COMP4601 Recommender V1.0: Pierre Seguin and Awais Qureshi";
+		name = "COMP4601 Recommender V1.0: Pierre Seguin, Awais Qureshi and Luke Daschko";
 	
 	}
 
@@ -223,6 +223,7 @@ public class Recommender {
 	public String advertising(@PathParam("user") String user, @PathParam("page") String page){
 		String html = "<html><head><style>.advertising {text-align: center;position:relative;float:left;max-width:15%;padding: 0 0 2em 0 }img {max-height: 250px;}.review {position:relative;float:left;max-width:80%;}</style></head><body><div class=\"review\">";
 		BasicDBObject u = MyMongoClient.getInstance().findObject("COMP4601-A2", "users", new BasicDBObject("name", user));
+		BasicDBObject m = MyMongoClient.getInstance().findObject("COMP4601-A2", "movieNames", new BasicDBObject("movieName", page));
 		BasicDBObject review = MyMongoClient.getInstance().findObject("COMP4601-A2", "reviews", new BasicDBObject("user", user).append("movie", page));
 		if(review != null)
 			html = html + "<h2>" + user + "'s Review of " + page + "</h2><p>" + review.getString("review") + "</p>";
@@ -231,6 +232,12 @@ public class Recommender {
 		html = html + "</div> <div class=\"advertising\"><h3>Movie you might like:</h3>";
 		if(u != null) {
 			ArrayList<BasicDBObject> genreAds = MyMongoClient.getInstance().findObjects("COMP4601-A2", "Advertising", new BasicDBObject("genre", u.getString("genre")));
+			html = html + genreAds.get(((int)(Math.random()*genreAds.size()))).getString("value");
+		}
+		html = html + "<br><h3>Based on your recent search:</h3>";
+		if(m != null) {
+			
+			ArrayList<BasicDBObject> genreAds = MyMongoClient.getInstance().findObjects("COMP4601-A2", "Advertising", new BasicDBObject("genre", Categorizer.MOVIE_GENRE[m.getInt("genre")]));
 			html = html + genreAds.get(((int)(Math.random()*genreAds.size()))).getString("value");
 		}
 		html = html + "</div> </body> </html>";
